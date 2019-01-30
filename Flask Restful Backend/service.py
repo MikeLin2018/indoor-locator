@@ -6,9 +6,9 @@ api = Api(app)
 
 class HelloWorld(Resource):
     def get(self):
-        return {'hello':'world'}
+        return {'Hi':'This is Mike!'}
 
 api.add_resource(HelloWorld,'/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run('0.0.0.0',debug=True,port=5000)
