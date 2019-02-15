@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : indoor_locator
+ Source Server         : mysql
  Source Server Type    : MySQL
- Source Server Version : 80015
+ Source Server Version : 50719
  Source Host           : localhost
  Source Database       : indoor_locator_db
 
  Target Server Type    : MySQL
- Target Server Version : 80015
+ Target Server Version : 50719
  File Encoding         : utf-8
 
- Date: 02/09/2019 21:00:27 PM
+ Date: 02/15/2019 16:14:13 PM
 */
 
 SET NAMES utf8mb4;
@@ -26,25 +26,11 @@ CREATE TABLE `ap_data` (
   `BSSID` int(11) DEFAULT NULL,
   `SSID` varchar(11) DEFAULT NULL,
   `quality` int(11) DEFAULT NULL,
-  `add_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `user_id` int(11) DEFAULT NULL,
-  `room_id` int(11) DEFAULT NULL,
-  `building_id` int(11) DEFAULT NULL,
+  `scan_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `room_id` (`room_id`),
-  KEY `building_id` (`building_id`),
-  CONSTRAINT `ap_data_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `ap_data_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `ap_data_ibfk_3` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- ----------------------------
---  Records of `ap_data`
--- ----------------------------
-BEGIN;
-INSERT INTO `ap_data` VALUES ('11', '12345678', 'AP Name', '99', '2019-02-09 20:50:14', '11', '10', '18');
-COMMIT;
+  KEY `scan_id` (`scan_id`),
+  CONSTRAINT `ap_data_ibfk_1` FOREIGN KEY (`scan_id`) REFERENCES `scan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `building`
@@ -61,7 +47,7 @@ CREATE TABLE `building` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `building_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `building`
@@ -82,7 +68,7 @@ CREATE TABLE `normalization` (
   KEY `building_id` (`building_id`),
   CONSTRAINT `normalization_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `normalization_ibfk_2` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `room`
@@ -101,7 +87,7 @@ CREATE TABLE `room` (
   KEY `user_id_2` (`user_id`),
   CONSTRAINT `room_ibfk_1` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `room_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `room`
@@ -109,6 +95,25 @@ CREATE TABLE `room` (
 BEGIN;
 INSERT INTO `room` VALUES ('10', 'Room 101', '1', '18', '11'), ('11', 'Room 101', '2', '18', '11');
 COMMIT;
+
+-- ----------------------------
+--  Table structure for `scan`
+-- ----------------------------
+DROP TABLE IF EXISTS `scan`;
+CREATE TABLE `scan` (
+  `id` int(11) NOT NULL,
+  `add_time` datetime DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `room_id` int(11) DEFAULT NULL,
+  `building_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `room_id` (`room_id`),
+  KEY `building_id` (`building_id`),
+  CONSTRAINT `scan_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `scan_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `scan_ibfk_3` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `user`
@@ -121,7 +126,7 @@ CREATE TABLE `user` (
   `email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `user`
