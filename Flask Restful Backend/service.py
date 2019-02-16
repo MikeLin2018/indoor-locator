@@ -3,6 +3,10 @@ from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 import DB_objects
 from sqlalchemy import exists, func, and_
+from sklearn.model_selection import train_test_split
+from sklearn.svm import LinearSVC
+import pickle
+import numpy as np
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -185,12 +189,13 @@ class Scan(Resource):
         scan_parser.add_argument('room_id', type=str, help="No room_id specified.")
         request_json = request.get_json()
         scans = None
-        if request_json is not None and request_json["scans"] is not None:
+        if request_json is not None and "scans" in request_json:
             scans = request_json["scans"]
             for scan in scans:
-                if scan["BSSID"] is None or scan["SSID"] is None or scan["quality"] is None:
-                    return Response.check_none_response([scan["BSSID"], scan["SSID"], scan["quality"]],
-                                                        ["BSSID", "SSID", "quality"])
+                for apdata in scan:
+                    if apdata["BSSID"] is None or apdata["SSID"] is None or apdata["quality"] is None:
+                        return Response.check_none_response([apdata["BSSID"], apdata["SSID"], apdata["quality"]],
+                                                            ["BSSID", "SSID", "quality"])
         args = scan_parser.parse_args()
 
         # Check arguments exist
@@ -213,31 +218,34 @@ class Scan(Resource):
 
         # Add a new Scan
         try:
-            new_scan_data = DB_objects.Scan(add_time=datetime.datetime.now(), user_id=user.id, room_id=args.room_id,
-                                            building_id=args.building_id)
-            db.session.add(new_scan_data)
-            db.session.commit()
-        except:
-            return Response(success=False, messages='Unknown issue when adding a new Scan data').text()
+            scan_list = []
+            for scan in scans:
+                new_scan_data = DB_objects.Scan(add_time=datetime.datetime.now(), user_id=user.id, room_id=args.room_id,
+                                                building_id=args.building_id)
+                db.session.add(new_scan_data)
+                db.session.commit()
 
-        try:
-            apdata_list = []
-            for apdata in scans:
-                new_ap_data = DB_objects.APData(BSSID=apdata["BSSID"], SSID=apdata["SSID"], quality=apdata["quality"],
-                                                scan_id=new_scan_data.id)
-                db.session.add(new_ap_data)
-                db.session.flush()
-                apdata_list.append({"apdata_id": new_ap_data.id, "BSSID": new_ap_data.BSSID, "SSID": new_ap_data.SSID,
-                                    "quality": new_ap_data.quality,
-                                    "scan_id": new_ap_data.scan_id})
+                apdata_list = []
+                for apdata in scan:
+                    new_ap_data = DB_objects.APData(BSSID=apdata["BSSID"], SSID=apdata["SSID"],
+                                                    quality=apdata["quality"],
+                                                    scan_id=new_scan_data.id)
+                    db.session.add(new_ap_data)
+                    db.session.flush()
+                    apdata_list.append(
+                        {"apdata_id": new_ap_data.id, "BSSID": new_ap_data.BSSID, "SSID": new_ap_data.SSID,
+                         "quality": new_ap_data.quality,
+                         "scan_id": new_ap_data.scan_id})
+                scan_list.append(apdata_list)
             db.session.commit()
-            return Response(success=True, messages="New Scan data is created.",
-                            data={"scan_id": new_scan_data.id, "add_time": str(new_scan_data.add_time),
-                                  "email": user.email,
-                                  "room_id": new_scan_data.room_id, "building_id": new_scan_data.building_id,
-                                  "apdata": apdata_list}).text()
+            # return Response(success=True, messages="New Scan data is created.",
+            #                 data={"scan_id": new_scan_data.id, "add_time": str(new_scan_data.add_time),
+            #                       "email": user.email,
+            #                       "room_id": new_scan_data.room_id, "building_id": new_scan_data.building_id,
+            #                       "scans": scan_list}).text()
+            return Response(success=True, messages="New Scan data is created").text()
         except:
-            return Response(success=False, messages='Unknown issue when adding new ap data').text()
+            return Response(success=False, messages='Unknown issue when adding a new Scan/Ap data').text()
 
     def get(self):
         scan_parser = parser.copy()
@@ -271,6 +279,108 @@ class Scan(Resource):
         return Response(success=True, messages="Scan data lookup success.", data=scans_data).text()
 
 
+class Train(Resource):
+    def post(self):
+        scan_parser = parser.copy()
+        scan_parser.add_argument('building_id', type=str, help="No building_id specified.")
+        args = scan_parser.parse_args()
+
+        # Check arguments exist
+        if None in [args.building_id]:
+            return Response.check_none_response([args.building_id],
+                                                ["Building_id"])
+
+        # Check building exist
+        if not db.session.query(exists().where(DB_objects.Building.id == args.building_id)).scalar():
+            return Response(success=False, messages='Building does not exist.').text()
+
+        # Get all scans
+        scans = db.session.query(DB_objects.Scan).filter(DB_objects.Scan.building_id == args.building_id).all()
+
+        # Enter AP data into dataset
+        dataset = Dataset()
+        for scan in scans:
+            apdata_list = db.session.query(DB_objects.APData).filter(DB_objects.APData.scan_id == scan.id).all()
+            dataset.add(
+                [{"BSSID": apdata.BSSID, "SSID": apdata.SSID, "quality": apdata.quality} for apdata in apdata_list],
+                scan.room_id)
+
+        # Set Training_status to "training"
+        building = db.session.query(DB_objects.Building).filter(DB_objects.Building.id == args.building_id)
+        building.update({"training_status": "training"})
+        db.session.commit()
+
+        # try:
+        # Training
+        clf = LinearSVC(random_state=0, tol=1e-5)
+        clf.fit(dataset.samples, dataset.rooms)
+        model_filename = './models/' + str(args.building_id) + "_" + "model"
+        BSSIDs_filename = './models/' + str(args.building_id) + "_" + "BSSIDs"
+        with open(model_filename, "wb") as file:
+            pickle.dump(clf, file)
+        with open(BSSIDs_filename, "wb") as file:
+            pickle.dump(dataset.BSSIDs, file)
+        # building.update({"trained_model": model_binary, "trained_model_BSSIDs": header_binary})
+        building.update({"training_status": "Trained", "training_time": datetime.datetime.now()})
+        db.session.commit()
+        return Response(success=True, messages="Training Success.").text()
+    # except:
+    #     building.update({"training_status": "Not Trained"})
+    #     db.session.commit()
+    #     return Response(success=False, messages="Training Fail").text()
+
+
+class Predict(Resource):
+    def get(self):
+        scan_parser = parser.copy()
+        scan_parser.add_argument('building_id', type=str, help="No building_id specified.")
+
+        # Get Scans data
+        request_json = request.get_json()
+        scans = None
+        if request_json is not None and "scans" in request_json:
+            scans = request_json["scans"]
+            for scan in scans:
+                for apdata in scan:
+                    if apdata["BSSID"] is None or apdata["SSID"] is None or apdata["quality"] is None:
+                        return Response.check_none_response([apdata["BSSID"], apdata["SSID"], apdata["quality"]],
+                                                            ["BSSID", "SSID", "quality"])
+
+        args = scan_parser.parse_args()
+
+        # Check building exist
+        if not db.session.query(exists().where(DB_objects.Building.id == args.building_id)).scalar():
+            return Response(success=False, messages='Building does not exist.').text()
+
+        # Check scans have data
+        if len(scans) == 0:
+            return Response(success=False, messages="Cannot predict on empty data.").text()
+
+        # Get Building Model and Header
+        building = db.session.query(DB_objects.Building).filter(DB_objects.Building.id == args.building_id).first()
+        model_filename = './models/' + str(args.building_id) + "_" + "model"
+        BSSIDs_filename = './models/' + str(args.building_id) + "_" + "BSSIDs"
+
+        # Setup data to be predicted
+        BSSIDs = []
+        with open(BSSIDs_filename, 'rb') as file:
+            BSSIDs = pickle.load(file)
+        apdata_list = scans[0]
+        apdata_prediction = [0] * len(BSSIDs)
+        for apdata in apdata_list:
+            if apdata['BSSID'] in BSSIDs:
+                apdata_prediction[BSSIDs.index(apdata['BSSID'])] = apdata['quality']
+
+        # Get model from building
+        with open(model_filename, 'rb') as file:
+            clf = pickle.load(file)
+
+        # Predict with model
+        prediction = clf.predict(np.asarray(apdata_prediction).reshape(1, -1))
+
+        return prediction
+
+
 class Response:
     def __init__(self, success, messages, data=None):
         self.success = success
@@ -291,6 +401,32 @@ class Response:
         return Response(success=False, messages=messages).text()
 
 
+class Dataset:
+    def __init__(self):
+        self.BSSIDs = []
+        self.SSIDs = []
+        self.samples = []
+        self.rooms = []  # Each room corresponding to a sample
+
+    def add(self, apdata_list, room_id):
+        # Each sample is a single scan
+        new_sample = [0] * len(self.BSSIDs)
+        for apdata in apdata_list:
+            BSSID = apdata["BSSID"]
+            SSID = apdata["SSID"]
+            quality = apdata["quality"]
+            if BSSID in self.BSSIDs:
+                new_sample[self.BSSIDs.index(BSSID)] = quality
+            else:  # BSSID is not in self.BSSIDs
+                self.BSSIDs.append(BSSID)
+                self.SSIDs.append(SSID)
+                new_sample.append(quality)
+                for sample in self.samples:
+                    sample.append(0)
+        self.rooms.append(room_id)
+        self.samples.append(new_sample)
+
+
 # URL Management
 api.add_resource(HelloWorld, '/')
 api.add_resource(NewUser, '/user/new')
@@ -298,6 +434,8 @@ api.add_resource(VerifyUser, '/user/verify')
 api.add_resource(Building, '/building')
 api.add_resource(Room, '/room')
 api.add_resource(Scan, '/scan')
+api.add_resource(Train, '/train')
+api.add_resource(Predict, '/predict')
 
 # Main Method
 if __name__ == '__main__':

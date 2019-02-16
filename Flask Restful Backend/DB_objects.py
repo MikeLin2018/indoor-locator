@@ -42,6 +42,8 @@ class Building(DB):
     user_id = Column(Integer, ForeignKey('user.id'))  # Creator
     trained_model = Column(BLOB)
     training_status = Column(VARCHAR)
+    training_time = Column(DATETIME)
+    trained_model_BSSIDs = Column(BLOB)
 
 
 class Normalization(DB):
