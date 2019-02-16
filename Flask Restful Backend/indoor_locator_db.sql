@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : mysql
+ Source Server         : indoor_locator
  Source Server Type    : MySQL
- Source Server Version : 50719
+ Source Server Version : 80015
  Source Host           : localhost
  Source Database       : indoor_locator_db
 
  Target Server Type    : MySQL
- Target Server Version : 50719
+ Target Server Version : 80015
  File Encoding         : utf-8
 
- Date: 02/15/2019 16:14:13 PM
+ Date: 02/16/2019 00:14:05 AM
 */
 
 SET NAMES utf8mb4;
@@ -23,14 +23,21 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `ap_data`;
 CREATE TABLE `ap_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `BSSID` int(11) DEFAULT NULL,
+  `BSSID` varchar(11) DEFAULT NULL,
   `SSID` varchar(11) DEFAULT NULL,
   `quality` int(11) DEFAULT NULL,
   `scan_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `scan_id` (`scan_id`),
   CONSTRAINT `ap_data_ibfk_1` FOREIGN KEY (`scan_id`) REFERENCES `scan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `ap_data`
+-- ----------------------------
+BEGIN;
+INSERT INTO `ap_data` VALUES ('22', '12345678', 'AP Name1', '99', '13'), ('23', '87654321', 'AP Name2', '11', '13');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `building`
@@ -44,6 +51,7 @@ CREATE TABLE `building` (
   `user_id` int(11) DEFAULT NULL,
   `trained_model` blob,
   `training_status` varchar(255) DEFAULT NULL,
+  `training_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `building_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -53,7 +61,7 @@ CREATE TABLE `building` (
 --  Records of `building`
 -- ----------------------------
 BEGIN;
-INSERT INTO `building` VALUES ('18', 'The Doric on Lane', '40.006519984374460', '-83.013460864702130', '11', null, 'Not Trained'), ('20', 'Caldwell Lab', '40.002400000000000', '-83.015000000000000', '11', null, 'Not Trained');
+INSERT INTO `building` VALUES ('18', 'The Doric on Lane', '40.006519984374460', '-83.013460864702130', '11', null, 'Not Trained', null), ('20', 'Caldwell Lab', '40.002400000000000', '-83.015000000000000', '11', null, 'Not Trained', null);
 COMMIT;
 
 -- ----------------------------
@@ -101,7 +109,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `scan`;
 CREATE TABLE `scan` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `add_time` datetime DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `room_id` int(11) DEFAULT NULL,
@@ -113,7 +121,14 @@ CREATE TABLE `scan` (
   CONSTRAINT `scan_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `scan_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `scan_ibfk_3` FOREIGN KEY (`building_id`) REFERENCES `building` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Records of `scan`
+-- ----------------------------
+BEGIN;
+INSERT INTO `scan` VALUES ('13', '2019-02-16 00:01:57', '11', '10', '18');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `user`

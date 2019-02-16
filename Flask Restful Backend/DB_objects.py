@@ -15,16 +15,22 @@ class Room(DB):
     user_id = Column(Integer, ForeignKey('user.id'))  # Creator
 
 
-class APData(DB):
-    __tablename__ = "ap_data"
+class Scan(DB):
+    __tablename__ = "scan"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    BSSID = Column(Integer)
-    SSID = Column(VARCHAR)
-    quality = Column(Integer)
     add_time = Column(DATETIME)
     user_id = Column(Integer, ForeignKey('user.id'))  # Creator
     room_id = Column(Integer, ForeignKey('room.id'))
     building_id = Column(Integer, ForeignKey('building.id'))
+
+
+class APData(DB):
+    __tablename__ = "ap_data"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    BSSID = Column(VARCHAR)
+    SSID = Column(VARCHAR)
+    quality = Column(Integer)
+    scan_id = Column(Integer, ForeignKey("scan.id"))
 
 
 class Building(DB):
