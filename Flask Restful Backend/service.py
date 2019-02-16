@@ -378,7 +378,8 @@ class Predict(Resource):
         # Predict with model
         prediction = clf.predict(np.asarray(apdata_prediction).reshape(1, -1))
 
-        return prediction
+        print(prediction)
+        return "OK"
 
 
 class Response:
