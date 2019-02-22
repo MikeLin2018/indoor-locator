@@ -28,25 +28,25 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import io.reactivex.disposables.Disposable;
+//import io.reactivex.disposables.Disposable;
 
 
 
 public class MainActivity extends Activity {
-  public static final boolean IS_PRE_M_ANDROID = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
-  private static final int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 1000;
-  private static final String TAG = "ReactiveWifi";
-  private static final String WIFI_SIGNAL_LEVEL_MESSAGE = "WiFi signal level: ";
-  private static final String WIFI_STATE_MESSAGE = "WiFi State: ";
-  private TextView tvWifiSignalLevel;
-  private TextView tvWifiState;
-  private ListView lvAccessPoints;
-  private Disposable wifiSubscription;
-  private Disposable signalLevelSubscription;
-  private Disposable supplicantSubscription;
-  private Disposable wifiStateSubscription;
-  private Disposable wifiInfoSubscription;
-  private WifiManager myWifiManager;
+//  public static final boolean IS_PRE_M_ANDROID = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
+//  private static final int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 1000;
+//  private static final String TAG = "ReactiveWifi";
+//  private static final String WIFI_SIGNAL_LEVEL_MESSAGE = "WiFi signal level: ";
+//  private static final String WIFI_STATE_MESSAGE = "WiFi State: ";
+//  private TextView tvWifiSignalLevel;
+//  private TextView tvWifiState;
+//  private ListView lvAccessPoints;
+//  private Disposable wifiSubscription;
+//  private Disposable signalLevelSubscription;
+//  private Disposable supplicantSubscription;
+//  private Disposable wifiStateSubscription;
+//  private Disposable wifiInfoSubscription;
+//  private WifiManager myWifiManager;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -63,33 +63,33 @@ public class MainActivity extends Activity {
   }
 
 
-  private void showWifiInfo(View v) {
-
-    myWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-    myWifiManager.setWifiEnabled(true);
-    TextView wifiSignalLevelLabel = (TextView) findViewById(R.id.wifi_signal_level_label);
-    TextView SSID_view = (TextView) findViewById(R.id.SSID);
-    TextView BSSID_view = (TextView) findViewById(R.id.BSSID);
-    if (myWifiManager.startScan()) {
-      List<ScanResult> scans = myWifiManager.getScanResults();
-      if (scans != null && !scans.isEmpty()) {
-        for (ScanResult scan : scans) {
-          int level = WifiManager.calculateSignalLevel(scan.level, 20);
-          String SSID = scan.SSID;
-          String BSSID = scan.BSSID;
-          wifiSignalLevelLabel.setText(level);
-          SSID_view.setText(SSID);
-          BSSID_view.setText(BSSID);
-        }
-      }
-    }
-  }
+//  private void showWifiInfo(View v) {
+//
+//    myWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//    myWifiManager.setWifiEnabled(true);
+//    TextView wifiSignalLevelLabel = (TextView) findViewById(R.id.wifi_signal_level_label);
+//    TextView SSID_view = (TextView) findViewById(R.id.SSID);
+//    TextView BSSID_view = (TextView) findViewById(R.id.BSSID);
+//    if (myWifiManager.startScan()) {
+//      List<ScanResult> scans = myWifiManager.getScanResults();
+//      if (scans != null && !scans.isEmpty()) {
+//        for (ScanResult scan : scans) {
+//          int level = WifiManager.calculateSignalLevel(scan.level, 20);
+//          String SSID = scan.SSID;
+//          String BSSID = scan.BSSID;
+//          wifiSignalLevelLabel.setText(level);
+//          SSID_view.setText(SSID);
+//          BSSID_view.setText(BSSID);
+//        }
+//      }
+//    }
+//  }
 
 
 
   @Override protected void onResume() {
     super.onResume();
-    Log.d("Checkpoint3","On Resume Method is Called");
+    Log.d(getClass().getSimpleName(),"On Resume Method is Called");
 
    /* if (!isFineOrCoarseLocationPermissionGranted()) {
       requestCoarseLocationPermission();
@@ -106,9 +106,9 @@ public class MainActivity extends Activity {
 
   @Override protected void onPause() {
     super.onPause();
-    safelyUnsubscribe(wifiSubscription, signalLevelSubscription, supplicantSubscription,
-            wifiInfoSubscription, wifiStateSubscription);
-    Log.d("Checkpoint3","On Pause Method is Called");
+//    safelyUnsubscribe(wifiSubscription, signalLevelSubscription, supplicantSubscription,
+//            wifiInfoSubscription, wifiStateSubscription);
+    Log.d(getClass().getSimpleName(),"On Pause Method is Called");
   }
 
 
@@ -223,12 +223,12 @@ public class MainActivity extends Activity {
   private boolean isGranted(String permission) {
     return ActivityCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED;
   }  */
-private void safelyUnsubscribe(Disposable... subscriptions) {
-  for (Disposable subscription : subscriptions) {
-    if (subscription != null && !subscription.isDisposed()) {
-      subscription.dispose();
-    }
-  }
-}
+//private void safelyUnsubscribe(Disposable... subscriptions) {
+//  for (Disposable subscription : subscriptions) {
+//    if (subscription != null && !subscription.isDisposed()) {
+//      subscription.dispose();
+//    }
+//  }
+//}
 }
 
