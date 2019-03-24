@@ -1,6 +1,7 @@
 package com.locateme.indoor_locator;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public class Building {
 
@@ -13,10 +14,10 @@ public class Building {
     private Double longitude;
     private Double latitude;
     private TrainingStatus trainingStatus;
-    private LocalDateTime trainingTime;
+    private Date trainingTime;
     private String creator;
 
-    public Building(String name, Double longitude, Double latitude, TrainingStatus trainingStatus, LocalDateTime trainingTime, String creator) {
+    public Building(String name, Double longitude, Double latitude, TrainingStatus trainingStatus, Date trainingTime, String creator) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -41,7 +42,7 @@ public class Building {
         return this.trainingStatus;
     }
 
-    public LocalDateTime getTrainingTime() {
+    public Date getTrainingTime() {
         return this.trainingTime;
     }
 

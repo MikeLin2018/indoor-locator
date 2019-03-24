@@ -5,20 +5,25 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class BuildingFragment extends Fragment {
 
-    private List<Building> buildingList;
+    private List<Building> mBuildingList;
     private final String TAG = getClass().getSimpleName();
+    private BuildingAdapter buildingAdapter;
 
 
     @Override
@@ -27,18 +32,41 @@ public class BuildingFragment extends Fragment {
 
         Activity activity = getActivity();
         RecyclerView buildingRecyclerView = v.findViewById(R.id.building_recycler_view);
+        mBuildingList = getBuildingList();
 
         if (activity != null) {
             buildingRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
+            buildingAdapter = new BuildingAdapter(mBuildingList);
+            buildingRecyclerView.setAdapter(buildingAdapter);
+//            buildingRecyclerView.setItemAnimator(new DefaultItemAnimator());
         }
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+//        mBuildingList.add(new Building("caldwell", 5.0, 5.0, Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(), "Mike"));
+//        buildingAdapter.notifyDataSetChanged();
+        Log.d("mBuildingList",mBuildingList.toString());
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle saveInstanceState) {
+        super.onActivityCreated(saveInstanceState);
+
+
     }
 
     private List<Building> getBuildingList() {
         List<Building> buildingList = new ArrayList<Building>();
 
         //TODO: Make Async Query to construct buildingList.
+        buildingList.add(new Building("doric",5.0,5.0,Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(),"Mike"));
+        buildingList.add(new Building("test",5.0,5.0,Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(),"Mike"));
 
         return buildingList;
     }
@@ -49,12 +77,12 @@ public class BuildingFragment extends Fragment {
 
         BuildingHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_building, parent, false));
-
             buildingNameTextView = itemView.findViewById(R.id.list_item_building_name);
         }
 
         void bind(String buildingName) {
-            buildingNameTextView.setText(buildingName);
+            this.buildingName = buildingName;
+            buildingNameTextView.setText(this.buildingName);
         }
     }
 
@@ -74,13 +102,16 @@ public class BuildingFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(BuildingHolder holder, int position) {
-            Building building = BuildingFragment.this.buildingList.get(position);
+            Building building = BuildingFragment.this.mBuildingList.get(position);
             holder.bind(building.getName());
+            Log.d("building_id",String.valueOf(position));
+            Log.d("building_List_length",String.valueOf(this.buildingList.size()));
+
         }
 
         @Override
         public int getItemCount() {
-            return buildingList.size();
+            return this.buildingList.size();
         }
     }
 
