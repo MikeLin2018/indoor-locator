@@ -34,6 +34,7 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -93,17 +94,19 @@ public class RoomFragment extends Fragment {
     }
 
     private void getRoomList() {
-        // build Request to get a list of rooms
-        JsonObject json = new JsonObject();
-        json.addProperty("building_id", parentBuildingID);
+//        // build Request to get a list of rooms
+//        JsonObject json = new JsonObject();
+//        json.addProperty("building_id", parentBuildingID);
+//
+//
+//        // TODO: Not Yet Finish getRoomList
+//        RequestBody requestBody = RequestBody.create(JSON, json);
 
-
-        // TODO: Not Yet Finish getRoomList
-        RequestBody requestBody = RequestBody.create(JSON, json);
+        HttpUrl url = HttpUrl.parse(getString(R.string.URL_ROOM)).newBuilder().addQueryParameter("building_id", String.valueOf(parentBuildingID)).build();
 
 
         Request request = new Request.Builder()
-                .url(getString(R.string.URL_ROOM))
+                .url(url)
                 .build();
 
         // Make async request to update building list
@@ -136,25 +139,13 @@ public class RoomFragment extends Fragment {
                                 if (finalResponseJSON.getBoolean("success")) {
                                     // If server resposne "success"
                                     JSONArray data = finalResponseJSON.getJSONArray("data");
-                                    mBuildingList.clear();
-                                    // Iterate response data and add buildings
-                                    for (int i = 0; i < data.length(); i++) {
-                                        JSONObject buildingJSON = data.getJSONObject(i);
-                                        Date date = new Date(Long.MIN_VALUE);
-                                        if (!buildingJSON.getString("training_time").equals("None")) {
-                                            Calendar cal = Calendar.getInstance();
-                                            SimpleDateFormat sdf_parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                            cal.setTime(sdf_parser.parse(buildingJSON.getString("training_time")));
-                                        }
-                                        Building building = new Building(buildingJSON.getString("name"),
-                                                Double.valueOf(buildingJSON.getString("longitude")),
-                                                Double.valueOf(buildingJSON.getString("latitude")),
-                                                Building.TrainingStatus.valueOf(buildingJSON.getString("training_status")),
-                                                date,
-                                                buildingJSON.getString("username"));
-                                        mBuildingList.add(building);
-                                        buildingAdapter.notifyDataSetChanged();
+                                    mRoomList.clear();
+                                    for(int i=0;i<data.length();i++){
+                                        JSONObject room = data.getJSONObject(i);
+                                        mRoomList.add(new Room(room.getString("name"),room.getInt("floor")));
                                     }
+                                    roomAdapter.notifyDataSetChanged();
+
                                 } else {
                                     // If server response "fail"
                                     JSONArray message = finalResponseJSON.getJSONArray("messages");
@@ -162,88 +153,6 @@ public class RoomFragment extends Fragment {
                                 }
                                 Log.d(TAG, responseText);
                             } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-                    }
-                });
-
-            }
-        });
-    }
-
-    private void getBuildingList() {
-        // Add initial building, for testing purpose
-        // mBuildingList.add(new Building("doric", 5.0, 5.0, Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(), "Mike"));
-
-
-        // build Request to get a list of building
-        Request request = new Request.Builder()
-                .url(URL_SHOW_BUILDING)
-                .build();
-
-        // Make async request to update building list
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-                Log.d(TAG, "getBuildingList call failure");
-                Log.d(TAG, e.toString());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                // Create and parse responseJSON
-                final String responseText = response.body().string();
-                JSONObject responseJSON = null;
-                try {
-                    responseJSON = new JSONObject(responseText);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                JSONObject finalResponseJSON = responseJSON;
-
-                // Update UI by JSON response
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalResponseJSON != null) {
-                            try {
-                                if (finalResponseJSON.getBoolean("success")) {
-                                    // If server resposne "success"
-                                    JSONArray data = finalResponseJSON.getJSONArray("data");
-                                    mBuildingList.clear();
-                                    // Iterate response data and add buildings
-                                    for (int i = 0; i < data.length(); i++) {
-                                        JSONObject buildingJSON = data.getJSONObject(i);
-                                        Date date = new Date(Long.MIN_VALUE);
-                                        if (!buildingJSON.getString("training_time").equals("None")) {
-                                            Calendar cal = Calendar.getInstance();
-                                            SimpleDateFormat sdf_parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                            cal.setTime(sdf_parser.parse(buildingJSON.getString("training_time")));
-                                        }
-                                        Building building = new Building(buildingJSON.getString("name"),
-                                                Double.valueOf(buildingJSON.getString("longitude")),
-                                                Double.valueOf(buildingJSON.getString("latitude")),
-                                                Building.TrainingStatus.valueOf(buildingJSON.getString("training_status")),
-                                                date,
-                                                buildingJSON.getString("username"));
-                                        mBuildingList.add(building);
-                                        buildingAdapter.notifyDataSetChanged();
-                                    }
-                                } else {
-                                    // If server response "fail"
-                                    JSONArray message = finalResponseJSON.getJSONArray("messages");
-                                    Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
-                                }
-                                Log.d(TAG, responseText);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (ParseException e) {
                                 e.printStackTrace();
                             }
                         }

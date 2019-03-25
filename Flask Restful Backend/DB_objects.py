@@ -66,7 +66,7 @@ class User(DB):
 
 
 class database:
-    engine = create_engine('mysql+mysqlconnector://root:linyuxiang1998@localhost:3306/indoor_locator_db')
+    engine = create_engine('mysql+mysqlconnector://root:LinYuXiang@localhost:3306/indoor_locator_db')
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 

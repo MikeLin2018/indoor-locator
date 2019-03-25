@@ -106,8 +106,12 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
                 if (hasLocationPermission()) {
                     LocationManager lm = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    double userLongitude = location.getLongitude();
-                    double userLatitude = location.getLatitude();
+                    double userLongitude = -73.9862;
+                    double userLatitude = 40.7544;
+                    if(location != null) {
+                         userLongitude = location.getLongitude();
+                         userLatitude = location.getLatitude();
+                    }
                     Intent intent = new PlacePicker.IntentBuilder()
                             .accessToken(Mapbox.getAccessToken())
                             .placeOptions(
