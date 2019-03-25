@@ -80,3 +80,4 @@ lint/tmp/
 # lint/reports/
 .DS_Store
 IndoorLocator/.idea/*
+IndoorLocator/app/src/main/res/values/map_key.xml
