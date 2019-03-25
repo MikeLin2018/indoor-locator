@@ -104,7 +104,7 @@ class Building(Resource):
         # Add a new building
         try:
             new_building = DB_objects.Building(name=args.name, longitude=args.longitude, latitude=args.latitude,
-                                               user_id=user.id, training_status="Not Trained")
+                                               user_id=user.id, training_status="notTrained")
             db.session.add(new_building)
             db.session.commit()
             return Response(success=True, messages='New building is created.',
@@ -119,7 +119,13 @@ class Building(Resource):
     def get(self):
         buildings = db.session.query(DB_objects.Building).all()
         return Response(success=True, messages="Building data lookup success.",
-                        data=[building.name for building in buildings]).text()
+                        data=[{"name": building.name, "longitude": str(building.longitude),
+                               "latitude": str(building.latitude),
+                               "training_status": building.training_status,
+                               "training_time": str(building.training_time),
+                               "username": db.session.query(DB_objects.User).filter(
+                                   DB_objects.User.id == building.user_id).first().name} for
+                              building in buildings]).text()
 
 
 class Room(Resource):
@@ -321,7 +327,7 @@ class Train(Resource):
         with open(BSSIDs_filename, "wb") as file:
             pickle.dump(dataset.BSSIDs, file)
         # building.update({"trained_model": model_binary, "trained_model_BSSIDs": header_binary})
-        building.update({"training_status": "Trained", "training_time": datetime.datetime.now()})
+        building.update({"training_status": "trained", "training_time": datetime.datetime.now()})
         db.session.commit()
         return Response(success=True, messages="Training Success.").text()
     # except:
