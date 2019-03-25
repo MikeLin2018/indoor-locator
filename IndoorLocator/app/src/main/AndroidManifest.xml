@@ -28,7 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".RoomActivity">
+        <activity android:name=".ApDataScanActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,6 +36,6 @@
         </activity>
 
 
-        <activity android:name=".NewBuildingActivity"></activity>
+        <!--<activity android:name=".NewBuildingActivity"></activity>-->
     </application>
 </manifest>

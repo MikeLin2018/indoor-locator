@@ -41,7 +41,6 @@ public class ApDataScanActivity extends AppCompatActivity {
                 getWifiNetworksList();
 
             }
-
         });
 
         buttoncollect = findViewById(R.id.collectBtn);
@@ -63,23 +62,32 @@ public class ApDataScanActivity extends AppCompatActivity {
         }
     }
 
-    public void scanWifi() {
-        System.out.println("Test");
-        wifiManager.setWifiEnabled(true);
+    public void scanWifi()  {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        ScanResult scanResult = null;
+        boolean f = wifiManager.startScan();
+        if (!f) {
+            Log.d("scanWIFI","startScan failed");
+        }else {
+            List<ScanResult> list = wifiManager.getScanResults();
+            if (list != null) {
+                Log.d("scanWIFI",String.valueOf(list.size()));
+            }
+        }
 
-        if (wifiManager.startScan()) {
-            List<ScanResult> scans = wifiManager.getScanResults();
-              if (scans != null && !scans.isEmpty()) {
-                for (ScanResult scan : scans) {
-                  int level = WifiManager.calculateSignalLevel(scan.level, 20);
-                  String SSID = scan.SSID;
-                  String BSSID = scan.BSSID;
-                  System.out.println("hello");
-                  System.out.println(level);
-
-                }
-              }
-    }
+//        if (wifiManager.startScan()) {
+//            List<ScanResult> scans = wifiManager.getScanResults();
+//              if (scans != null && !scans.isEmpty()) {
+//                for (ScanResult scan : scans) {
+//                  int level = WifiManager.calculateSignalLevel(scan.level, 20);
+//                  String SSID = scan.SSID;
+//                  String BSSID = scan.BSSID;
+//                  System.out.println("hello");
+//                  System.out.println(level);
+//
+//                }
+//              }
+//    }
 
     }
 

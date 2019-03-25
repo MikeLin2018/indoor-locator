@@ -144,6 +144,35 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION_PERMISSIONS) {
+            if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                LocationManager lm = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                double userLongitude = -73.9862;
+                double userLatitude = 40.7544;
+                if(location != null) {
+                    userLongitude = location.getLongitude();
+                    userLatitude = location.getLatitude();
+                }
+                Intent intent = new PlacePicker.IntentBuilder()
+                        .accessToken(Mapbox.getAccessToken())
+                        .placeOptions(
+                                PlacePickerOptions.builder()
+                                        .statingCameraPosition(
+                                                new CameraPosition.Builder()
+//                                                            .target(new LatLng(40.7544, -73.9862))
+                                                        .target(new LatLng(userLatitude, userLongitude))
+                                                        .zoom(16)
+                                                        .build())
+                                        .build())
+                        .build(getActivity());
+                startActivityForResult(intent, PLACE_SELECTION_REQUEST_CODE);
+            }
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == getActivity().RESULT_OK && requestCode == PLACE_SELECTION_REQUEST_CODE) {
