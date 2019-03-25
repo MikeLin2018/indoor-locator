@@ -5,25 +5,45 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.time.LocalDateTime;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class BuildingFragment extends Fragment {
 
-    private List<Building> mBuildingList;
+    private List<Building> mBuildingList = new ArrayList<>();
     private final String TAG = getClass().getSimpleName();
     private BuildingAdapter buildingAdapter;
+    private OkHttpClient client = new OkHttpClient();
+    private String URL_SHOW_BUILDING = "http://10.0.2.2:5000/building";
 
 
     @Override
@@ -32,43 +52,118 @@ public class BuildingFragment extends Fragment {
 
         Activity activity = getActivity();
         RecyclerView buildingRecyclerView = v.findViewById(R.id.building_recycler_view);
-        mBuildingList = getBuildingList();
+
 
         if (activity != null) {
             buildingRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
             buildingAdapter = new BuildingAdapter(mBuildingList);
             buildingRecyclerView.setAdapter(buildingAdapter);
-//            buildingRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            buildingRecyclerView.setItemAnimator(new DefaultItemAnimator());
         }
 
         return v;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
+        // Set actions bar, borrowed from Mr. Champions' TicTacToe android app
+        try {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            if (activity != null) {
+                ActionBar actionBar = activity.getSupportActionBar();
+                if (actionBar != null) {
+                    actionBar.setSubtitle("Buildings");
+                }
+            }
+        } catch (NullPointerException npe) {
+            Log.e(TAG, "Could not set subtitle");
+        }
 
-//        mBuildingList.add(new Building("caldwell", 5.0, 5.0, Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(), "Mike"));
-//        buildingAdapter.notifyDataSetChanged();
-        Log.d("mBuildingList",mBuildingList.toString());
+        // Get Building List from Server
+        getBuildingList();
     }
 
 
-    @Override
-    public void onActivityCreated(Bundle saveInstanceState) {
-        super.onActivityCreated(saveInstanceState);
+    private void getBuildingList() {
+        // Add initial building, for testing purpose
+        // mBuildingList.add(new Building("doric", 5.0, 5.0, Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(), "Mike"));
 
 
-    }
+        // build Request to get a list of building
+        Request request = new Request.Builder()
+                .url(URL_SHOW_BUILDING)
+                .build();
 
-    private List<Building> getBuildingList() {
-        List<Building> buildingList = new ArrayList<Building>();
+        // Make async request to update building list
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                Log.d(TAG, "getBuildingList call failure");
+                Log.d(TAG, e.toString());
+            }
 
-        //TODO: Make Async Query to construct buildingList.
-        buildingList.add(new Building("doric",5.0,5.0,Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(),"Mike"));
-        buildingList.add(new Building("test",5.0,5.0,Building.TrainingStatus.notTrained, Calendar.getInstance().getTime(),"Mike"));
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                // Create and parse responseJSON
+                final String responseText = response.body().string();
+                JSONObject responseJSON = null;
+                try {
+                    responseJSON = new JSONObject(responseText);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JSONObject finalResponseJSON = responseJSON;
 
-        return buildingList;
+                // Update UI by JSON response
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalResponseJSON != null) {
+                            try {
+                                if (finalResponseJSON.getBoolean("success")) {
+                                    // If server resposne "success"
+                                    JSONArray data = finalResponseJSON.getJSONArray("data");
+                                    mBuildingList.clear();
+                                    // Iterate response data and add buildings
+                                    for (int i = 0; i < data.length(); i++) {
+                                        JSONObject buildingJSON = data.getJSONObject(i);
+                                        Date date = new Date(Long.MIN_VALUE);
+                                        if (!buildingJSON.getString("training_time").equals("None")) {
+                                            Calendar cal = Calendar.getInstance();
+                                            SimpleDateFormat sdf_parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                            cal.setTime(sdf_parser.parse(buildingJSON.getString("training_time")));
+                                        }
+                                        Building building = new Building(buildingJSON.getString("name"),
+                                                Double.valueOf(buildingJSON.getString("longitude")),
+                                                Double.valueOf(buildingJSON.getString("latitude")),
+                                                Building.TrainingStatus.valueOf(buildingJSON.getString("training_status")),
+                                                date,
+                                                buildingJSON.getString("username"));
+                                        mBuildingList.add(building);
+                                        buildingAdapter.notifyDataSetChanged();
+                                    }
+                                } else {
+                                    // If server response "fail"
+                                    JSONArray message = finalResponseJSON.getJSONArray("messages");
+                                    Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
+                                }
+                                Log.d(TAG, responseText);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                    }
+                });
+
+            }
+        });
     }
 
     private class BuildingHolder extends RecyclerView.ViewHolder {
@@ -104,9 +199,6 @@ public class BuildingFragment extends Fragment {
         public void onBindViewHolder(BuildingHolder holder, int position) {
             Building building = BuildingFragment.this.mBuildingList.get(position);
             holder.bind(building.getName());
-            Log.d("building_id",String.valueOf(position));
-            Log.d("building_List_length",String.valueOf(this.buildingList.size()));
-
         }
 
         @Override
