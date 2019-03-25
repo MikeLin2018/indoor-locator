@@ -81,3 +81,5 @@ lint/tmp/
 .DS_Store
 IndoorLocator/.idea/*
 IndoorLocator/app/src/main/res/values/map_key.xml
+IndoorLocator/.idea/misc.xml
+Flask Restful Backend/__pycache__/DB_objects.cpython-36.pyc
