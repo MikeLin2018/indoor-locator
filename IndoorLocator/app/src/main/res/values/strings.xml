@@ -18,4 +18,24 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_view">Original</string>
 
+    <string name="app_name">Indoor-Locator</string>
+    <string name="user_location_permission_explanation">To create your building, please allow location service.</string>
+    <string name="user_location_permission_not_granted">User Location Permission not granted</string>
+    <string name="your_building_name_label">Building name</string>
+    <string name="your_building_latitude_label">Building latitude (please pick location through map)</string>
+    <string name="your_building_longitude_label">Building longitude (please pick location through map)</string>
+    <string name="your_building_find_on_map_label">Pick your building location on map</string>
+    <string name="selected_place_info">Select_Place_Info</string>
+    <string name="go_to_picker_activity">Go to picker activity</string>
+    <string name="new_building_submit">Create New Building</string>
+
+    <string name="new_room_submit">Create New Room</string>
+    <string name="your_room_name_label">Room Name</string>
+    <string name="your_room_floor_label">Room Floor</string>
+    <string name="train_model_button_building_list">Train</string>
+    <string name="train_model_button_train_fragment">Train</string>
+    <string name="URL_BUILDING">http://10.0.2.2:5000/building</string>
+    <string name="URL_ROOM">http://10.0.2.2:5000/room</string>
+    <string name="URL_TRAIN">http://10.0.2.2:5000/train</string>
+
 </resources>
