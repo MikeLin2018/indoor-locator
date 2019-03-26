@@ -29,7 +29,7 @@ public class UserLoginFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public UserLoginFragment() {
+   public UserLoginFragment() {
         // Required empty public constructor
     }
 
@@ -51,20 +51,21 @@ public class UserLoginFragment extends Fragment {
         return fragment;
     }
 
-    @Override
+    /*@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_login, container, false);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

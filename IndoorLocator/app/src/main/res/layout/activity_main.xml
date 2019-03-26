@@ -3,13 +3,7 @@
     android:orientation="vertical" android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.97"
-        android:text="@string/text_view"
-        android:textSize="25sp" />
+
     <ListView
         android:id="@+id/wifiList"
         android:layout_width="match_parent"
