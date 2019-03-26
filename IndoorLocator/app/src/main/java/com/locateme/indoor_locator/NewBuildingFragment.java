@@ -108,9 +108,9 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     double userLongitude = -73.9862;
                     double userLatitude = 40.7544;
-                    if(location != null) {
-                         userLongitude = location.getLongitude();
-                         userLatitude = location.getLatitude();
+                    if (location != null) {
+                        userLongitude = location.getLongitude();
+                        userLatitude = location.getLatitude();
                     }
                     Intent intent = new PlacePicker.IntentBuilder()
                             .accessToken(Mapbox.getAccessToken())
@@ -151,7 +151,7 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 double userLongitude = -73.9862;
                 double userLatitude = 40.7544;
-                if(location != null) {
+                if (location != null) {
                     userLongitude = location.getLongitude();
                     userLatitude = location.getLatitude();
                 }
@@ -237,7 +237,6 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
                                     // If server resposne "success"
                                     JSONObject data = finalResponseJSON.getJSONObject("data");
                                     String buildingName = data.getString("name");
-                                    // If server response "fail"
                                     JSONArray message = finalResponseJSON.getJSONArray("messages");
                                     Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
                                     getActivity().finish();

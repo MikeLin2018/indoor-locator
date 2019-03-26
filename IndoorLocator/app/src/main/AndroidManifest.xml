@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -28,7 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ApDataScanActivity">
+        <activity android:name=".BuildingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,6 +36,15 @@
         </activity>
 
 
-        <!--<activity android:name=".NewBuildingActivity"></activity>-->
+        <activity android:name=".NewRoomActivity">
+
+        </activity>
+        <activity android:name=".RoomActivity">
+
+        </activity>
+        <activity android:name=".NewBuildingActivity">
+
+        </activity>
+        <activity android:name=".TrainingActivity" />
     </application>
 </manifest>

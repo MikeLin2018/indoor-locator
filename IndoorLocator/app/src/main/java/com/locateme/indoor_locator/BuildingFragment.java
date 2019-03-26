@@ -1,6 +1,7 @@
 package com.locateme.indoor_locator;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -136,7 +138,7 @@ public class BuildingFragment extends Fragment {
                                             SimpleDateFormat sdf_parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                             cal.setTime(sdf_parser.parse(buildingJSON.getString("training_time")));
                                         }
-                                        Building building = new Building(buildingJSON.getString("name"),
+                                        Building building = new Building(buildingJSON.getInt("id"), buildingJSON.getString("name"),
                                                 Double.valueOf(buildingJSON.getString("longitude")),
                                                 Double.valueOf(buildingJSON.getString("latitude")),
                                                 Building.TrainingStatus.valueOf(buildingJSON.getString("training_status")),
@@ -166,18 +168,39 @@ public class BuildingFragment extends Fragment {
         });
     }
 
-    private class BuildingHolder extends RecyclerView.ViewHolder {
-        private String buildingName;
+    private class BuildingHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Building building;
         private TextView buildingNameTextView;
+        private Button buildingTrainButton;
 
         BuildingHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_building, parent, false));
             buildingNameTextView = itemView.findViewById(R.id.list_item_building_name);
+            buildingTrainButton = itemView.findViewById(R.id.list_item_train_button);
         }
 
-        void bind(String buildingName) {
-            this.buildingName = buildingName;
-            buildingNameTextView.setText(this.buildingName);
+        void bind(Building building) {
+            this.building = building;
+            buildingNameTextView.setText(this.building.getName());
+            buildingNameTextView.setOnClickListener(this);
+            buildingTrainButton.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.list_item_train_button:
+                    Intent trainingIntent = new Intent(getActivity(), TrainingActivity.class);
+                    trainingIntent.putExtra("name", building.getName()).putExtra("longitude", building.getLongitude()).putExtra("latitude", building.getLatitude()).putExtra("creator", building.getCreator()).putExtra("building_id", building.getID());
+
+                    startActivity(trainingIntent);
+                    break;
+                case R.id.list_item_building_name:
+                    Intent roomIntent = new Intent(getActivity(), RoomActivity.class);
+                    roomIntent.putExtra("building_id", building.getID());
+                    startActivity(roomIntent);
+                    break;
+            }
         }
     }
 
@@ -198,7 +221,7 @@ public class BuildingFragment extends Fragment {
         @Override
         public void onBindViewHolder(BuildingHolder holder, int position) {
             Building building = BuildingFragment.this.mBuildingList.get(position);
-            holder.bind(building.getName());
+            holder.bind(building);
         }
 
         @Override

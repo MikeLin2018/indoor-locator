@@ -1,4 +1,12 @@
 package com.locateme.indoor_locator;
 
-public class TrainingActivity {
+
+import android.support.v4.app.Fragment;
+
+public class TrainingActivity extends SingleFragmentActivity {
+
+    @Override
+    protected Fragment createFragment() {
+        return new TrainingFragment();
+    }
 }

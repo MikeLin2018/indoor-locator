@@ -9,8 +9,15 @@
     <string name="selected_place_info">Select_Place_Info</string>
     <string name="go_to_picker_activity">Go to picker activity</string>
     <string name="new_building_submit">Create New Building</string>
+
+    <string name="new_room_submit">Create New Room</string>
+    <string name="your_room_name_label">Room Name</string>
+    <string name="your_room_floor_label">Room Floor</string>
+    <string name="train_model_button_building_list">Train</string>
+    <string name="train_model_button_train_fragment">Train</string>
     <string name="URL_BUILDING">http://10.0.2.2:5000/building</string>
     <string name="URL_ROOM">http://10.0.2.2:5000/room</string>
+    <string name="URL_TRAIN">http://10.0.2.2:5000/train</string>
 
 
 </resources>

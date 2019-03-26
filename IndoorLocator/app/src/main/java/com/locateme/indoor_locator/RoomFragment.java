@@ -1,6 +1,7 @@
 package com.locateme.indoor_locator;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -58,9 +59,7 @@ public class RoomFragment extends Fragment {
         Activity activity = getActivity();
         RecyclerView roomRecyclerView = v.findViewById(R.id.room_recycler_view);
 
-        // TODO: Get parent building id from Intent
-        parentBuildingID = 18;
-
+        parentBuildingID = getActivity().getIntent().getExtras().getInt("building_id");
 
         if (activity != null) {
             roomRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
@@ -94,16 +93,7 @@ public class RoomFragment extends Fragment {
     }
 
     private void getRoomList() {
-//        // build Request to get a list of rooms
-//        JsonObject json = new JsonObject();
-//        json.addProperty("building_id", parentBuildingID);
-//
-//
-//        // TODO: Not Yet Finish getRoomList
-//        RequestBody requestBody = RequestBody.create(JSON, json);
-
         HttpUrl url = HttpUrl.parse(getString(R.string.URL_ROOM)).newBuilder().addQueryParameter("building_id", String.valueOf(parentBuildingID)).build();
-
 
         Request request = new Request.Builder()
                 .url(url)
@@ -140,9 +130,9 @@ public class RoomFragment extends Fragment {
                                     // If server resposne "success"
                                     JSONArray data = finalResponseJSON.getJSONArray("data");
                                     mRoomList.clear();
-                                    for(int i=0;i<data.length();i++){
+                                    for (int i = 0; i < data.length(); i++) {
                                         JSONObject room = data.getJSONObject(i);
-                                        mRoomList.add(new Room(room.getString("name"),room.getInt("floor")));
+                                        mRoomList.add(new Room(room.getString("name"), room.getInt("floor")));
                                     }
                                     roomAdapter.notifyDataSetChanged();
 
