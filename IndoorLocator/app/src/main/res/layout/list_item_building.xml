@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/list_item_building_name"
-        android:layout_width="match_parent"
+        android:layout_width="299dp"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:layout_marginTop="8sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8sp"
+        android:layout_toStartOf="@+id/list_item_train_button"
+        android:lineSpacingExtra="8sp"
+        android:text="TextView"
+        android:textSize="18sp" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/list_item_train_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/train_model_button_building_list"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

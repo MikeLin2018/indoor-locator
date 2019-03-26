@@ -15,7 +15,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    } //Solve the problem with OK HTTP
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -23,9 +28,18 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.0.0'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
+    implementation 'com.squareup.okhttp3:okhttp:3.14.0'
+    // Google Map
+    implementation("com.google.android.libraries.places:places-compat:1.0.0")
+    implementation("com.schibstedspain.android:leku:5.0.0") {
+        exclude group: 'com.google.android.gms'
+        exclude module: "play-services-places"
+    }
+    // Mapbox
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v7:0.7.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.2.0'
+    implementation 'com.jakewharton.timber:timber:4.6.0'
 }
