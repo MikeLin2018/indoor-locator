@@ -70,7 +70,7 @@ public class UserLoginFragment extends Fragment {
                 Log.d(TAG,"email: " + u.getEmail());
                 Log.d(TAG,"password: " + u.getPassword());
                 if(u.getPassword().length() == 0 || u.getEmail().length() == 0){
-                    errorMessage.setText("All fields are required");
+                    errorMessage.setText(R.string.field_empty);
                     errorMessage.setVisibility(View.VISIBLE);
                     return;
                 }
@@ -116,6 +116,7 @@ public class UserLoginFragment extends Fragment {
 
 
     private void login(User u) {
+        final String mPass = u.getPassword();
         //Set up post body with provided password and email
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -169,6 +170,7 @@ public class UserLoginFragment extends Fragment {
                                     KeyValueDB.setEmail(a, mEmail);
                                     KeyValueDB.setUserId(a, mID);
                                     KeyValueDB.setName(a, mName);
+                                    KeyValueDB.setPassword(a, mPass);
                                     in = new Intent(getActivity(),HomeActivity.class);
                                     startActivity(in);
                                 } else {
@@ -190,6 +192,9 @@ public class UserLoginFragment extends Fragment {
 
             }
         });
+    }
+    private void signup(User u){
+
     }
 
 }

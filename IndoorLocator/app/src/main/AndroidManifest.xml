@@ -27,7 +27,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ApDataScanActivity" />
-        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".UserPreferenceActivity"></activity>
     </application>
 
 </manifest>

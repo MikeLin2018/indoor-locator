@@ -41,4 +41,12 @@ public class KeyValueDB {
         editor.putString("name_key", input);
         editor.commit();
     }
+    public static String getPassword(Context context){
+        return getPrefs(context).getString("password_key", "defaultName");
+    }
+    public static void setPassword(Context context, String input) {
+        SharedPreferences.Editor editor = getPrefs(context).edit();
+        editor.putString("password_key", input);
+        editor.commit();
+    }
 }
