@@ -33,8 +33,8 @@ public class UserLoginFragment extends Fragment {
 
     private final String TAG = "LOGIN";
 
-    //private Button login;
-    //private Button signup;
+    private Button login;
+    private Button signup;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,7 +44,9 @@ public class UserLoginFragment extends Fragment {
         emailEntered = (EditText) v.findViewById(R.id.editText);
         password = (TextView) v.findViewById(R.id.passwordTextView);
         passwordEntered = (EditText) v.findViewById(R.id.editText2);
-        Button login = v.findViewById(R.id.loginButton);
+        login = (Button) v.findViewById(R.id.loginButton);
+        signup = (Button) v.findViewById(R.id.signupButton);
+
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +59,24 @@ public class UserLoginFragment extends Fragment {
 
                 KeyValueDB.setEmail(getActivity(), u.getEmail());
 
-                in = new Intent(getActivity(),ApDataScanActivity.class);
+                in = new Intent(getActivity(),HomeActivity.class);
+                startActivity(in);
+
+            }
+        });
+
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //login();
+                //Create a new user with first name set to empty string.  Will set upon confirming login
+                User u = new User(emailEntered.getText().toString(), passwordEntered.getText().toString(), "");
+                Log.d(TAG,"email: " + u.getEmail());
+                Log.d(TAG,"password: " + u.getPassword());
+
+                KeyValueDB.setEmail(getActivity(), u.getEmail());
+
+                in = new Intent(getActivity(),HomeActivity.class);
                 startActivity(in);
 
             }
