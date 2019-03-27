@@ -5,6 +5,7 @@ import DB_objects
 from sqlalchemy import exists, func, and_
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
 import pickle
 import numpy as np
 import operator
@@ -350,7 +351,7 @@ class Train(Resource):
 
         # try:
         # Training
-        clf = LinearSVC(random_state=0, tol=1e-5)
+        clf = LogisticRegression(multi_class='multinomial', solver='newton-cg')
         clf.fit(dataset.samples, dataset.rooms)
         model_filename = './models/' + str(args.building_id) + "_" + "model"
         BSSIDs_filename = './models/' + str(args.building_id) + "_" + "BSSIDs"
