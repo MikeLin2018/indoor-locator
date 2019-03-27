@@ -28,7 +28,8 @@
         </activity>
         <activity android:name=".ApDataScanActivity" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".UserPreferenceActivity"></activity>
+        <activity android:name=".UserPreferenceActivity" />
+        <activity android:name=".UserSignupActivity"></activity>
     </application>
 
 </manifest>

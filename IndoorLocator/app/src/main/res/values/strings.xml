@@ -25,6 +25,8 @@
     <string name="scan">Scan</string>
     <string name="train">Train</string>
     <string name="verify_user_URL">http://10.0.3.2:5000/user/verify</string>
+    <string name="create_user_URL">http://10.0.3.2:5000/user/new</string>
+
     <string name="title_activity_settings">Settings</string>
     <string name="apply">Apply Changes</string>
     <string name="cancel">Cancel</string>
@@ -34,8 +36,7 @@
     <string name="wrong_oldpass">Old password is not correct</string>
     <string name="passwords_dont_match">New password and confirm password must match</string>
     <string name="field_empty">Please fill out all fields</string>
-
-
+    <string name="login_name_label">Username</string>
 
 
 </resources>
