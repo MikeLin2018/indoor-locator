@@ -18,9 +18,13 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home, container, false);
-        String email = KeyValueDB.getEmail(getContext());
+        Context c = getContext();
+        String email = KeyValueDB.getEmail(c);
+        int id = KeyValueDB.getUserId(c);
+        String name = KeyValueDB.getName(c);
+
         useremail = (TextView) v.findViewById(R.id.emailTextView);
-        useremail.setText(email);
+        useremail.setText(id + " " + email + " " + name);
 
         return v;
     }

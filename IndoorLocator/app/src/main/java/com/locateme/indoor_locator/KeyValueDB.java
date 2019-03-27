@@ -16,12 +16,29 @@ public class KeyValueDB {
     }
 
     public static String getEmail(Context context) {
-        return getPrefs(context).getString("email_key", "default_username");
+        return getPrefs(context).getString("email_key", "default_email");
     }
 
     public static void setEmail(Context context, String input) {
         SharedPreferences.Editor editor = getPrefs(context).edit();
         editor.putString("email_key", input);
+        editor.commit();
+    }
+    public static int getUserId(Context context){
+        return getPrefs(context).getInt("id_key", -1);
+    }
+    public static void setUserId(Context context, int input) {
+        SharedPreferences.Editor editor = getPrefs(context).edit();
+        editor.putInt("id_key", input);
+        editor.commit();
+    }
+
+    public static String getName(Context context){
+        return getPrefs(context).getString("name_key", "defaultName");
+    }
+    public static void setName(Context context, String input) {
+        SharedPreferences.Editor editor = getPrefs(context).edit();
+        editor.putString("name_key", input);
         editor.commit();
     }
 }

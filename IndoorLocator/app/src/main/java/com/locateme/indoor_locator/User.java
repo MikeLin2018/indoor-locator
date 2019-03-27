@@ -47,39 +47,4 @@ public class User extends HttpGetRequest{
     public void setPassword(String password){
         this.password = password;
     }
-
-    /*public String login(){
-        String json = "";
-        OkHttpClient client = new OkHttpClient();
-        String url = "";
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-        client.newCall(request).enqueue(new Callback(){
-            @Override
-            public void onFailure(Call call, IOException e){
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException{
-                if(response.isSuccessful()){
-                    final String myResponse = response.body().string();
-
-                    MainActivity.this.runOnUiThread(new Runnable(){
-                        @Override
-                        public void run(){
-
-                        }
-                    });
-                }
-            }
-        });
-        return json;
-    }*/
-    public void signup(){
-
-    }
-
 }
