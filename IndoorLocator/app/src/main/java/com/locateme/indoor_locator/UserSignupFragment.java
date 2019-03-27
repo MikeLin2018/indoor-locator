@@ -41,6 +41,7 @@ public class UserSignupFragment extends Fragment {
     private EditText emailEntered;
     private EditText usernameEntered;
     private EditText passwordEntered;
+    private EditText confirmPasswordEntered;
     private Button login;
     private Button signup;
     private TextView errorMessage;
@@ -56,6 +57,8 @@ public class UserSignupFragment extends Fragment {
         usernameEntered = (EditText) v.findViewById(R.id.editTextName);
         emailEntered = (EditText) v.findViewById(R.id.editText);
         passwordEntered = (EditText) v.findViewById(R.id.editText2);
+        confirmPasswordEntered= (EditText) v.findViewById(R.id.confirmPassword);
+
         login = (Button) v.findViewById(R.id.loginButton);
         signup = (Button) v.findViewById(R.id.signupButton);
         errorMessage = (TextView) v.findViewById(R.id.errorMessage);
@@ -84,6 +87,11 @@ public class UserSignupFragment extends Fragment {
                 }
                 if (!validEmailForm(u.getEmail())) {
                     errorMessage.setText("Email must be of the form 'email@example.com");
+                    errorMessage.setVisibility(View.VISIBLE);
+                    return;
+                }
+                if(!u.getPassword().equals(confirmPasswordEntered.getText().toString())){
+                    errorMessage.setText(R.string.passwords_dont_match);
                     errorMessage.setVisibility(View.VISIBLE);
                     return;
                 }

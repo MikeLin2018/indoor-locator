@@ -52,6 +52,18 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
+    <TextView
+        android:id="@+id/confirmPasswordTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm_password" />
+
+    <EditText
+        android:id="@+id/confirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword" />
 
     <Button
         android:id="@+id/loginButton"
