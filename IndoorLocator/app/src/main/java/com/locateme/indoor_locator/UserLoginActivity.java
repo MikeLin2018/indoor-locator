@@ -17,7 +17,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class UserLoginActivity extends SingleFragmentActivity {
-    //private TextView userInfo;
     @Override
     protected Fragment createFragment() {
         return new UserLoginFragment();

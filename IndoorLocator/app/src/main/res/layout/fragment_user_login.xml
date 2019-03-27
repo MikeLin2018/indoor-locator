@@ -7,6 +7,7 @@
     tools:context=".UserLoginFragment">
 
     <TextView
+        android:id="@+id/emailTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_email_label" />
@@ -19,6 +20,7 @@
         android:inputType="textEmailAddress" />
 
     <TextView
+        android:id="@+id/passwordTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_password_label" />
@@ -31,13 +33,13 @@
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Button" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/signupButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Button" />
