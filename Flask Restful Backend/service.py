@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 import pickle
 import numpy as np
+import operator
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -244,7 +245,8 @@ class Scan(Resource):
         if not session.query(exists().where(DB_objects.Room.id == args.room_id)).scalar():
             return Response(success=False, messages='Room does not exist.').text()
 
-        # Add a new Scan
+        # Add new scans
+        scan_count = 0
         try:
             scan_list = []
             for scan in scans:
@@ -265,13 +267,16 @@ class Scan(Resource):
                          "quality": new_ap_data.quality,
                          "scan_id": new_ap_data.scan_id})
                 scan_list.append(apdata_list)
+                scan_count += 1
             session.commit()
             # return Response(success=True, messages="New Scan data is created.",
             #                 data={"scan_id": new_scan_data.id, "add_time": str(new_scan_data.add_time),
             #                       "email": user.email,
             #                       "room_id": new_scan_data.room_id, "building_id": new_scan_data.building_id,
             #                       "scans": scan_list}).text()
-            return Response(success=True, messages="New Scan data is created").text()
+            return Response(success=True, messages="New Scan data is created", data={
+                "count": scan_count
+            }).text()
         except:
             return Response(success=False, messages='Unknown issue when adding a new Scan/Ap data').text()
 
@@ -318,8 +323,7 @@ class Train(Resource):
 
         # Check arguments exist
         if None in [args.building_id]:
-            return Response.check_none_response([args.building_id],
-                                                ["Building_id"])
+            return Response.check_none_response([args.building_id], ["Building_id"])
 
         # Get Session
         session = database.DBSession()
@@ -392,8 +396,19 @@ class Train(Resource):
 
 class Predict(Resource):
     def get(self):
+        # Maximum Building Search Radius
+        radius = 0.001  # 100m
+        nradius = -0.001
+
+        # Parse argument
         scan_parser = parser.copy()
-        scan_parser.add_argument('building_id', type=str, help="No building_id specified.")
+        scan_parser.add_argument('longitude', type=float, help="No building_id specified.")
+        scan_parser.add_argument('latitude', type=float, help="No building_id specified.")
+        args = scan_parser.parse_args()
+
+        # Check arguments exist
+        if None in [args.longitude, args.latitude]:
+            return Response.check_none_response([args.longitude, args.latitude], ["Longitude", "Latitude"])
 
         # Get Scans data
         request_json = request.get_json()
@@ -406,23 +421,41 @@ class Predict(Resource):
                         return Response.check_none_response([apdata["BSSID"], apdata["SSID"], apdata["quality"]],
                                                             ["BSSID", "SSID", "quality"])
 
-        args = scan_parser.parse_args()
-
         # Get Session
         session = database.DBSession()
-
-        # Check building exist
-        if not session.query(exists().where(DB_objects.Building.id == args.building_id)).scalar():
-            return Response(success=False, messages='Building does not exist.').text()
 
         # Check scans have data
         if len(scans) == 0:
             return Response(success=False, messages="Cannot predict on empty data.").text()
 
+        # Get All Buildings
+        buildings = session.query(DB_objects.Building).filter(DB_objects.Building.training_status == "trained").filter(
+            and_(and_(and_(DB_objects.Building.longitude - args.longitude < radius,
+                           DB_objects.Building.longitude - args.longitude > nradius),
+                      DB_objects.Building.latitude - args.latitude < radius,
+                      DB_objects.Building.latitude - args.latitude > nradius))).all()
+        print("Lenge of Building for Prediction", len(buildings))
+
+        # Coverage Test
+        building_count = {}
+        for building in buildings:
+            building_count[building.id] = 0
+            BSSIDs_filename = './models/' + str(building.id) + "_" + "BSSIDs"
+            BSSIDs = []
+            with open(BSSIDs_filename, 'rb') as file:
+                BSSIDs = pickle.load(file)
+            # Check for matches
+            for scan in scans:
+                for apdata in scan:
+                    if apdata["BSSID"] in BSSIDs:
+                        building_count[building.id] += 1
+        # Find the building with maximum count
+        best_building_id = max(building_count.items(), key=operator.itemgetter(1))[0]
+
+        # Make prediction on best building
         # Get Building Model and Header
-        building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.building_id).first()
-        model_filename = './models/' + str(args.building_id) + "_" + "model"
-        BSSIDs_filename = './models/' + str(args.building_id) + "_" + "BSSIDs"
+        model_filename = './models/' + str(best_building_id) + "_" + "model"
+        BSSIDs_filename = './models/' + str(best_building_id) + "_" + "BSSIDs"
 
         # Setup data to be predicted
         BSSIDs = []
@@ -439,10 +472,78 @@ class Predict(Resource):
             clf = pickle.load(file)
 
         # Predict with model
-        prediction = clf.predict(np.asarray(apdata_prediction).reshape(1, -1))
+        prediction_prob = np.multiply(100, clf.predict_proba(np.asarray(apdata_prediction).reshape(1, -1)))
+        room_probs = {}
+        for index, classes in enumerate(clf.classes_):
+            prob = float(prediction_prob[0][index])
+            room_probs[str(classes)] = prob
 
-        print(prediction)
-        return "OK"
+        # Find the room with maximum probability
+        best_room = max(room_probs.items(), key=lambda item: item[1])  # format ('12', 98.03358894585917)
+        best_room_id = best_room[0]
+        probability = best_room[1]
+
+        # Retrieve Room Information
+        room = session.query(DB_objects.Room).filter(DB_objects.Room.id == best_room_id).first()
+
+        return Response(success=True, messages=["Successfully predict room."], data={
+            "room_id": room.id, "building_id": room.building_id, "name": room.name,
+            "floor": room.floor, "probability": probability
+        }).text()
+
+    #
+    # def get(self):
+    #     scan_parser = parser.copy()
+    #     scan_parser.add_argument('building_id', type=str, help="No building_id specified.")
+    #
+    #     # Get Scans data
+    #     request_json = request.get_json()
+    #     scans = None
+    #     if request_json is not None and "scans" in request_json:
+    #         scans = request_json["scans"]
+    #         for scan in scans:
+    #             for apdata in scan:
+    #                 if apdata["BSSID"] is None or apdata["SSID"] is None or apdata["quality"] is None:
+    #                     return Response.check_none_response([apdata["BSSID"], apdata["SSID"], apdata["quality"]],
+    #                                                         ["BSSID", "SSID", "quality"])
+    #
+    #     args = scan_parser.parse_args()
+    #
+    #     # Get Session
+    #     session = database.DBSession()
+    #
+    #     # Check building exist
+    #     if not session.query(exists().where(DB_objects.Building.id == args.building_id)).scalar():
+    #         return Response(success=False, messages='Building does not exist.').text()
+    #
+    #     # Check scans have data
+    #     if len(scans) == 0:
+    #         return Response(success=False, messages="Cannot predict on empty data.").text()
+    #
+    #     # Get Building Model and Header
+    #     building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.building_id).first()
+    #     model_filename = './models/' + str(args.building_id) + "_" + "model"
+    #     BSSIDs_filename = './models/' + str(args.building_id) + "_" + "BSSIDs"
+    #
+    #     # Setup data to be predicted
+    #     BSSIDs = []
+    #     with open(BSSIDs_filename, 'rb') as file:
+    #         BSSIDs = pickle.load(file)
+    #     apdata_list = scans[0]
+    #     apdata_prediction = [0] * len(BSSIDs)
+    #     for apdata in apdata_list:
+    #         if apdata['BSSID'] in BSSIDs:
+    #             apdata_prediction[BSSIDs.index(apdata['BSSID'])] = apdata['quality']
+    #
+    #     # Get model from building
+    #     with open(model_filename, 'rb') as file:
+    #         clf = pickle.load(file)
+    #
+    #     # Predict with model
+    #     prediction = clf.predict(np.asarray(apdata_prediction).reshape(1, -1))
+    #
+    #     print(prediction)
+    #     return "OK"
 
 
 class Response:
