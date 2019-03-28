@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.net.MediaType;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;

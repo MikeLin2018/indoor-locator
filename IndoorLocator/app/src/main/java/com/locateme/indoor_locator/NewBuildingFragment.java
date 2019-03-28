@@ -27,7 +27,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.picker.PlacePicker;
 import com.mapbox.mapboxsdk.plugins.places.picker.model.PlacePickerOptions;
-import com.schibstedspain.leku.LocationPickerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
