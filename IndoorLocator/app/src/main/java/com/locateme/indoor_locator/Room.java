@@ -7,12 +7,14 @@ public class Room {
 
     private String name;
     private int floor;
+    private int ID;
 //    private String buildingName;
 //    private int buildingID;
 
-    public Room(String name, int floor) {
+    public Room(int ID, String name, int floor) {
         this.name = name;
         this.floor = floor;
+        this.ID = ID;
 //        this.buildingName = buildingName;
 //        this.buildingID = buildingID;
     }
@@ -48,5 +50,12 @@ public class Room {
         this.floor = floor;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
 }
 

@@ -1,15 +1,14 @@
 package com.locateme.indoor_locator;
 
-import android.app.Activity;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,38 +28,39 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.MediaType;
 import okhttp3.Response;
 
-public class ApDataCollectFragment extends Fragment implements View.OnClickListener {
+public class PredictionFragment extends Fragment implements View.OnClickListener, LocationListener {
 
-    private List<Scan> mScanList;
-    private int roomID;
-    private int buildingID;
-    private String email;
     private final String TAG = getClass().getSimpleName();
     private OkHttpClient client = new OkHttpClient();
-    private Button collectButton;
-    private TextView collectMessage;
+    private LocationManager lm;
+    private List<Scan> mScanList;
+
+    private TextView predict_text;
+    private TextView predict_message;
+    private Button predict_button;
+
+    private double longitude;
+    private double latitude;
 
 
     @Override
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_room_collect, container, false);
-        collectButton = v.findViewById(R.id.collect_button);
-        collectMessage = v.findViewById(R.id.collect_message);
-        collectButton.setOnClickListener(this);
+        View v = inflater.inflate(R.layout.fragment_prediction, container, false);
+        predict_text = v.findViewById(R.id.fragment_prediction_text);
+        predict_message = v.findViewById(R.id.fragment_prediction_message);
+        predict_button = v.findViewById(R.id.fragment_prediction_button);
 
-        roomID = getActivity().getIntent().getExtras().getInt("room_id");
-        buildingID = getActivity().getIntent().getExtras().getInt("building_id");
-//        roomID = 12;
-//        buildingID = 18;
-        email = "lin.2453@osu.edu";
-
+        predict_text.setText("");
+        predict_message.setText("Message: Wait for Location Signal.");
+        predict_button.setEnabled(false);
+        predict_button.setOnClickListener(this);
         return v;
     }
 
@@ -75,7 +74,7 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
             if (activity != null) {
                 ActionBar actionBar = activity.getSupportActionBar();
                 if (actionBar != null) {
-                    actionBar.setSubtitle("Collect data for room");
+                    actionBar.setSubtitle("Prediction");
                 }
             }
         } catch (NullPointerException npe) {
@@ -83,8 +82,38 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    private void submitScanList() {
+    public Location getLastKnownLocation(){
+        // Get Last Known GPS Location
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+        // Multiple Attempts to get last known location
+        if (location == null){
+            location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        if (location == null){
+            location = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        }
+
+        return location;
+    }
+
+    public void getLocation(){
+        lm = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+        Location location;
+
+        location = getLastKnownLocation();
+        if (location == null){
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,0,this);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+        }else{
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+            predict_button.setEnabled(true);
+            predict_message.setText("Location Service Request Successfully.\nYou can click the button below to predict your room.");
+        }
+    }
+
+    private void requestPrediction() {
         // Create JSON
         JSONObject json = new JSONObject();
         try {
@@ -92,10 +121,11 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
             for (int i = 0; i < mScanList.size(); i++) {
                 JSONArray scan = new JSONArray();
                 // TODO: Add scan to JSONArray
+
+                // TODO: Add scan to scans
             }
-            json.put("building_id", buildingID);
-            json.put("room_id", roomID);
-            json.put("email", email);
+            json.put("longitude", longitude);
+            json.put("latitude", latitude);
             json.put("scans", scans);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -115,7 +145,7 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
-                Log.d(TAG, "Post scans call failure");
+                Log.d(TAG, "Post prediction call failure");
                 Log.d(TAG, e.toString());
             }
 
@@ -140,8 +170,10 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
                                 if (finalResponseJSON.getBoolean("success")) {
                                     // If server resposne "success"
                                     JSONObject data = finalResponseJSON.getJSONObject("data");
-                                    int scanSubmitCount = data.getInt("count");
-                                    Toast.makeText(getActivity(), String.format("%s scans have been successfully submitted.", String.valueOf(scanSubmitCount)), Toast.LENGTH_SHORT).show();
+                                    String roomName = data.getString("name");
+                                    int floor = data.getInt("floor");
+                                    double probability = data.getDouble("probability");
+                                    predict_message.setText(String.format("Prediction:\nRoom Name: %s\nFloor: %s\nProbability: %s\n\n",roomName,String.valueOf(floor),String.valueOf(probability)));
                                 } else {
                                     // If server response "fail"
                                     JSONArray message = finalResponseJSON.getJSONArray("messages");
@@ -159,17 +191,36 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
         });
     }
 
-    public List<Scan> getScanList() {
-        return new ArrayList<>();
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.collect_button:
-                mScanList = getScanList();
-                submitScanList();
+            case R.id.fragment_prediction_button:
+                
                 break;
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+        lm.removeUpdates(this);
+        predict_button.setEnabled(true);
+        predict_message.setText("Location Service Request Successfully.\nYou can click the button below to predict your room.");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

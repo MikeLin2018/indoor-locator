@@ -15,10 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.net.MediaType;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -130,7 +130,7 @@ public class RoomFragment extends Fragment {
                                     mRoomList.clear();
                                     for (int i = 0; i < data.length(); i++) {
                                         JSONObject room = data.getJSONObject(i);
-                                        mRoomList.add(new Room(room.getString("name"), room.getInt("floor")));
+                                        mRoomList.add(new Room(room.getInt("room_id"),room.getString("name"), room.getInt("floor")));
                                     }
                                     roomAdapter.notifyDataSetChanged();
 
@@ -153,18 +153,33 @@ public class RoomFragment extends Fragment {
         });
     }
 
-    private class RoomHolder extends RecyclerView.ViewHolder {
-        private String roomName;
+    private class RoomHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Room room;
         private TextView roomNameTextView;
+        private Button roomCollectButton;
 
         RoomHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_room, parent, false));
             roomNameTextView = itemView.findViewById(R.id.list_item_room_name);
+            roomCollectButton = itemView.findViewById(R.id.list_item_room_collect_button);
         }
 
-        void bind(String buildingName) {
-            this.roomName = buildingName;
-            roomNameTextView.setText(this.roomName);
+        void bind(Room room) {
+            this.room = room;
+            roomNameTextView.setText(room.getName());
+            roomCollectButton.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch(v.getId()){
+                case R.id.list_item_room_collect_button:
+                    Intent intent = new Intent(getActivity(),ApDataCollectActivity.class);
+                    intent.putExtra("room_id",room.getID());
+                    intent.putExtra("building_id",parentBuildingID);
+                    startActivity(intent);
+                    break;
+            }
         }
     }
 
@@ -185,7 +200,7 @@ public class RoomFragment extends Fragment {
         @Override
         public void onBindViewHolder(RoomHolder holder, int position) {
             Room room = RoomFragment.this.mRoomList.get(position);
-            holder.bind(room.getName());
+            holder.bind(room);
         }
 
         @Override

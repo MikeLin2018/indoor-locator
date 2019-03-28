@@ -396,7 +396,7 @@ class Train(Resource):
 
 
 class Predict(Resource):
-    def get(self):
+    def post(self):
         # Maximum Building Search Radius
         radius = 0.001  # 100m
         nradius = -0.001

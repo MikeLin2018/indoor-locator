@@ -19,7 +19,9 @@
     <string name="URL_ROOM">http://10.0.2.2:5000/room</string>
     <string name="URL_TRAIN">http://10.0.2.2:5000/train</string>
     <string name="URL_SCAN">http://10.0.2.2:5000/scan</string>
-    <string name="room_collect_instruction">Please move around the selected room while scanning.\nMake sure the edges of the room, as well as the interier of the room are all scaned.</string>
+    <string name="room_collect_instruction">Instruction:\nPlease move around the selected room while scanning.\nMake sure the edges of the room, as well as the interier of the room are all scaned.\n\n</string>
+    <string name="room_collect_button">Collect</string>
+    <string name="prediction_button">Predict</string>
 
 
 </resources>

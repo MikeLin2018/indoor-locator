@@ -27,7 +27,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.picker.PlacePicker;
 import com.mapbox.mapboxsdk.plugins.places.picker.model.PlacePickerOptions;
-import com.schibstedspain.leku.LocationPickerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,6 +107,9 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
                     Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     double userLongitude = -73.9862;
                     double userLatitude = 40.7544;
+                    if (location == null){
+                        location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
                     if (location != null) {
                         userLongitude = location.getLongitude();
                         userLatitude = location.getLatitude();
