@@ -40,10 +40,8 @@ class Building(DB):
     longitude = Column(DECIMAL)
     latitude = Column(DECIMAL)
     user_id = Column(Integer, ForeignKey('user.id'))  # Creator
-    trained_model = Column(BLOB)
     training_status = Column(VARCHAR)
     training_time = Column(DATETIME)
-    trained_model_BSSIDs = Column(BLOB)
 
 
 class Normalization(DB):
@@ -70,7 +68,6 @@ class User(DB):
 class database:
     engine = create_engine('mysql+mysqlconnector://root:linyuxiang1998@localhost:3306/indoor_locator_db')
     DBSession = sessionmaker(bind=engine)
-    session = DBSession()
 
     # new_room = User(name='Room 2', password=2, email="lin.2453@osu.edu")
     # session.add(new_room)
