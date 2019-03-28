@@ -45,7 +45,6 @@ public class BuildingFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
     private BuildingAdapter buildingAdapter;
     private OkHttpClient client = new OkHttpClient();
-    private String URL_SHOW_BUILDING = "http://10.0.2.2:5000/building";
 
 
     @Override
@@ -95,7 +94,7 @@ public class BuildingFragment extends Fragment {
 
         // build Request to get a list of building
         Request request = new Request.Builder()
-                .url(URL_SHOW_BUILDING)
+                .url(getString(R.string.URL_BUILDING))
                 .build();
 
         // Make async request to update building list

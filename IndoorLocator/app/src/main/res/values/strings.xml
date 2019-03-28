@@ -15,13 +15,19 @@
     <string name="your_room_floor_label">Room Floor</string>
     <string name="train_model_button_building_list">Train</string>
     <string name="train_model_button_train_fragment">Train</string>
-    <string name="URL_BUILDING">http://10.0.2.2:5000/building</string>
-    <string name="URL_ROOM">http://10.0.2.2:5000/room</string>
-    <string name="URL_TRAIN">http://10.0.2.2:5000/train</string>
-    <string name="URL_SCAN">http://10.0.2.2:5000/scan</string>
+    <!--<string name="URL_BUILDING">http://10.0.2.2:5000/building</string>-->
+    <!--<string name="URL_ROOM">http://10.0.2.2:5000/room</string>-->
+    <!--<string name="URL_TRAIN">http://10.0.2.2:5000/train</string>-->
+    <!--<string name="URL_SCAN">http://10.0.2.2:5000/scan</string>-->
     <string name="room_collect_instruction">Instruction:\nPlease move around the selected room while scanning.\nMake sure the edges of the room, as well as the interier of the room are all scaned.\n\n</string>
     <string name="room_collect_button">Collect</string>
     <string name="prediction_button">Predict</string>
 
+
+    <string name="URL_BUILDING">http://10.20.13.4:5000/building</string>
+    <string name="URL_ROOM">http://10.20.13.4:5000/room</string>
+    <string name="URL_TRAIN">http://10.20.13.4:5000/train</string>
+    <string name="URL_SCAN">http://10.20.13.4:5000/scan</string>
+    <string name="URL_PREDICT">http://10.20.13.4:5000/predict</string>
 
 </resources>

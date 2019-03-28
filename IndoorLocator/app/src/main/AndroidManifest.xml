@@ -39,21 +39,35 @@
         <activity android:name=".NewRoomActivity">
 
         </activity>
+
+
         <activity android:name=".RoomActivity">
 
         </activity>
+
+
         <activity android:name=".NewBuildingActivity">
 
         </activity>
-        <activity android:name=".TrainingActivity"></activity>
+
+
+        <activity android:name=".TrainingActivity">
+
+        </activity>
+
+
         <activity android:name=".ApDataCollectActivity">
 
         </activity>
+
+
         <activity android:name=".ApDataScanActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
+        </activity>
+
+        <activity android:name=".PredictionActivity">
+
+
         </activity>
     </application>
 </manifest>

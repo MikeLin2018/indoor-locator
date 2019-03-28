@@ -1,12 +1,21 @@
 package com.locateme.indoor_locator;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -39,7 +48,6 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
     private final String TAG = getClass().getSimpleName();
     private OkHttpClient client = new OkHttpClient();
     private LocationManager lm;
-    private List<Scan> mScanList;
 
     private TextView predict_text;
     private TextView predict_message;
@@ -48,9 +56,22 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
     private double longitude;
     private double latitude;
 
+    WifiManager wifiManager;
+    private List<List> mScansList;
+    private List<ScanResult> mScanList;
+    private int scanCount;
+    private int scanCountTarget;
+    private int failCount;
+    private int failCountMax;
+
+    private static final String[] LOCATION_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
+    private static final int REQUEST_LOCATION_PERMISSIONS_SCAN = 0;
+
 
     @Override
-
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_prediction, container, false);
         predict_text = v.findViewById(R.id.fragment_prediction_text);
@@ -61,6 +82,18 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
         predict_message.setText("Message: Wait for Location Signal.");
         predict_button.setEnabled(false);
         predict_button.setOnClickListener(this);
+
+        // Initialize Variables
+        scanCount = 0;
+        scanCountTarget = 1;
+        failCount = 0;
+        failCountMax = 10;
+        mScansList = new ArrayList<>();
+        mScanList = new ArrayList<>();
+        // Initialize wifiManager
+        wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+
         return v;
     }
 
@@ -80,36 +113,44 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
         } catch (NullPointerException npe) {
             Log.e(TAG, "Could not set subtitle");
         }
+        // Request Location
+        getLocation();
     }
 
-    public Location getLastKnownLocation(){
+    public Location getLastKnownLocation() {
+
         // Get Last Known GPS Location
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         // Multiple Attempts to get last known location
-        if (location == null){
+        if (location == null) {
             location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
-        if (location == null){
+        if (location == null) {
             location = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
         }
-
         return location;
+
     }
 
-    public void getLocation(){
-        lm = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
-        Location location;
+    public void getLocation() {
+        if (hasLocationPermission()) {
+            lm = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+            Location location;
 
-        location = getLastKnownLocation();
-        if (location == null){
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,0,this);
-            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
-        }else{
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-            predict_button.setEnabled(true);
-            predict_message.setText("Location Service Request Successfully.\nYou can click the button below to predict your room.");
+            location = getLastKnownLocation();
+            if (location == null) {
+                Log.d(TAG, "Requesting Location");
+                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+            } else {
+                Log.d(TAG, "Get Location From Last Known Location.");
+                longitude = location.getLongitude();
+                latitude = location.getLatitude();
+                predict_button.setEnabled(true);
+                predict_message.setText("Location Service Request Successfully.\nYou can click the button below to predict your room.");
+            }
+        } else {
+            requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSIONS_SCAN);
         }
     }
 
@@ -118,11 +159,17 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
         JSONObject json = new JSONObject();
         try {
             JSONArray scans = new JSONArray();
-            for (int i = 0; i < mScanList.size(); i++) {
+            for (int i = 0; i < mScansList.size(); i++) {
                 JSONArray scan = new JSONArray();
-                // TODO: Add scan to JSONArray
-
-                // TODO: Add scan to scans
+                for (Object result : mScansList.get(i)) {
+                    ScanResult scanResult = (ScanResult) result;
+                    JSONObject ApData = new JSONObject();
+                    ApData.put("BSSID", scanResult.BSSID);
+                    ApData.put("SSID", scanResult.SSID);
+                    ApData.put("quality", scanResult.level);
+                    scan.put(ApData);
+                }
+                scans.put(scan);
             }
             json.put("longitude", longitude);
             json.put("latitude", latitude);
@@ -136,7 +183,7 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
 
         // Construct Post Request
         Request request = new Request.Builder()
-                .url(getString(R.string.URL_SCAN))
+                .url(getString(R.string.URL_PREDICT))
                 .post(body)
                 .build();
 
@@ -173,7 +220,7 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
                                     String roomName = data.getString("name");
                                     int floor = data.getInt("floor");
                                     double probability = data.getDouble("probability");
-                                    predict_message.setText(String.format("Prediction:\nRoom Name: %s\nFloor: %s\nProbability: %s\n\n",roomName,String.valueOf(floor),String.valueOf(probability)));
+                                    predict_message.setText(String.format("Prediction:\nRoom Name: %s\nFloor: %s\nProbability: %s\n\n", roomName, String.valueOf(floor), String.valueOf(probability)));
                                 } else {
                                     // If server response "fail"
                                     JSONArray message = finalResponseJSON.getJSONArray("messages");
@@ -195,8 +242,23 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fragment_prediction_button:
-                
+                getScanResults();
                 break;
+        }
+    }
+
+    private boolean hasLocationPermission() {
+        int result = ContextCompat
+                .checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
+        return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION_PERMISSIONS_SCAN) {
+            if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                getLocation();
+            }
         }
     }
 
@@ -204,9 +266,11 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
     public void onLocationChanged(Location location) {
         longitude = location.getLongitude();
         latitude = location.getLatitude();
-        lm.removeUpdates(this);
         predict_button.setEnabled(true);
         predict_message.setText("Location Service Request Successfully.\nYou can click the button below to predict your room.");
+        Log.d(TAG, "Get Location From Network Provider.");
+        lm.removeUpdates(this);
+
     }
 
     @Override
@@ -222,5 +286,70 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    public void getScanResults() {
+        // Check WIFI is enabled
+        if (!wifiManager.isWifiEnabled()) {
+            Toast.makeText(getActivity(), "WiFi is disabled, please allow us to turn it on for scanning the access point data.", Toast.LENGTH_LONG).show();
+            wifiManager.setWifiEnabled(true);
+        }
+        scan();
+    }
+
+
+    public void scan() {
+        mScanList.clear();
+        Toast.makeText(getActivity(), "Scanning WiFi ...", Toast.LENGTH_SHORT).show();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        getActivity().registerReceiver(wifiScanReceiver, intentFilter);
+        boolean success = wifiManager.startScan();
+        if (!success) {
+            scanFailure();
+        }
+
+    }
+
+    BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context c, Intent intent) {
+            boolean success = intent.getBooleanExtra(
+                    WifiManager.EXTRA_RESULTS_UPDATED, false);
+            if (success) {
+                scanSuccess();
+            } else {
+                scanFailure();
+            }
+        }
+    };
+
+    private void scanSuccess() {
+        mScanList.clear();
+        for (ScanResult scanResult : wifiManager.getScanResults()) {
+            mScanList.add(scanResult);
+        }
+        mScansList.add(mScanList);
+        scanCount += 1;
+        Toast.makeText(getActivity(), String.format("Scan Success: %s/%s", String.valueOf(scanCount), String.valueOf(scanCountTarget)), Toast.LENGTH_SHORT).show();
+        if (scanCount < scanCountTarget) {
+            boolean success = wifiManager.startScan();
+            if (!success) {
+                scanFailure();
+            }
+        } else {
+            requestPrediction();
+        }
+    }
+
+    private void scanFailure() {
+        Toast.makeText(getActivity(), "Scan Fail.", Toast.LENGTH_SHORT).show();
+        if (failCount < failCountMax) {
+            boolean success = wifiManager.startScan();
+            if (!success) {
+                scanFailure();
+            }
+        }
     }
 }

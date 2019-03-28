@@ -1,10 +1,19 @@
 package com.locateme.indoor_locator;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -38,7 +47,7 @@ import okhttp3.Response;
 
 public class ApDataCollectFragment extends Fragment implements View.OnClickListener {
 
-    private List<Scan> mScanList;
+
     private int roomID;
     private int buildingID;
     private String email;
@@ -46,6 +55,20 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
     private OkHttpClient client = new OkHttpClient();
     private Button collectButton;
     private TextView collectMessage;
+
+    private static final String[] LOCATION_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
+    private static final int REQUEST_LOCATION_PERMISSIONS_SCAN = 0;
+
+    WifiManager wifiManager;
+    private List<List> mScansList;
+    private List<ScanResult> mScanList;
+    private int scanCount;
+    private int scanCountTarget;
+    private int failCount;
+    private int failCountMax;
 
 
     @Override
@@ -58,9 +81,17 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
 
         roomID = getActivity().getIntent().getExtras().getInt("room_id");
         buildingID = getActivity().getIntent().getExtras().getInt("building_id");
-//        roomID = 12;
-//        buildingID = 18;
         email = "lin.2453@osu.edu";
+
+        // Initialize Variables
+        scanCount = 0;
+        scanCountTarget = 5;
+        failCount = 0;
+        failCountMax = 10;
+        mScansList = new ArrayList<>();
+        mScanList = new ArrayList<>();
+        // Initialize wifiManager
+        wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         return v;
     }
@@ -89,9 +120,17 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
         JSONObject json = new JSONObject();
         try {
             JSONArray scans = new JSONArray();
-            for (int i = 0; i < mScanList.size(); i++) {
+            for (int i = 0; i < mScansList.size(); i++) {
                 JSONArray scan = new JSONArray();
-                // TODO: Add scan to JSONArray
+                for (Object result : mScansList.get(i)) {
+                    ScanResult scanResult = (ScanResult) result;
+                    JSONObject ApData = new JSONObject();
+                    ApData.put("BSSID", scanResult.BSSID);
+                    ApData.put("SSID", scanResult.SSID);
+                    ApData.put("quality", scanResult.level);
+                    scan.put(ApData);
+                }
+                scans.put(scan);
             }
             json.put("building_id", buildingID);
             json.put("room_id", roomID);
@@ -159,17 +198,98 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
         });
     }
 
-    public List<Scan> getScanList() {
-        return new ArrayList<>();
+    public void getScanResults() {
+        if (hasLocationPermission()) {
+            // Check WIFI is enabled
+            if (!wifiManager.isWifiEnabled()) {
+                Toast.makeText(getActivity(), "WiFi is disabled, please allow us to turn it on for scanning the access point data.", Toast.LENGTH_LONG).show();
+                wifiManager.setWifiEnabled(true);
+            }
+            scan();
+        } else {
+            requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSIONS_SCAN);
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.collect_button:
-                mScanList = getScanList();
-                submitScanList();
+                getScanResults();
                 break;
+        }
+    }
+
+    private boolean hasLocationPermission() {
+        int result = ContextCompat
+                .checkSelfPermission(getActivity(), LOCATION_PERMISSIONS[0]);
+        return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION_PERMISSIONS_SCAN) {
+            if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                getScanResults();
+            }
+        }
+    }
+
+
+    public void scan() {
+        collectMessage.setText(String.format("Scanning: %s/%s", String.valueOf(scanCount + 1), String.valueOf(scanCountTarget)));
+        mScanList.clear();
+        Toast.makeText(getActivity(), "Scanning WiFi ...", Toast.LENGTH_SHORT).show();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        getActivity().registerReceiver(wifiScanReceiver, intentFilter);
+        boolean success = wifiManager.startScan();
+        if (!success) {
+            scanFailure();
+        }
+
+    }
+
+    BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context c, Intent intent) {
+            boolean success = intent.getBooleanExtra(
+                    WifiManager.EXTRA_RESULTS_UPDATED, false);
+            if (success) {
+                scanSuccess();
+            } else {
+                scanFailure();
+            }
+        }
+    };
+
+    private void scanSuccess() {
+        mScanList.clear();
+        for (ScanResult scanResult : wifiManager.getScanResults()) {
+            mScanList.add(scanResult);
+        }
+        mScansList.add(mScanList);
+        scanCount += 1;
+        Toast.makeText(getActivity(), String.format("Scan Success: %s/%s", String.valueOf(scanCount), String.valueOf(scanCountTarget)), Toast.LENGTH_SHORT).show();
+        if (scanCount < scanCountTarget) {
+            collectMessage.setText(String.format("Scanning: %s/%s", String.valueOf(scanCount + 1), String.valueOf(scanCountTarget)));
+            boolean success = wifiManager.startScan();
+            if (!success) {
+                scanFailure();
+            }
+        } else {
+            submitScanList();
+        }
+    }
+
+    private void scanFailure() {
+        Toast.makeText(getActivity(), "Scan Fail.", Toast.LENGTH_SHORT).show();
+        if (failCount < failCountMax) {
+            boolean success = wifiManager.startScan();
+            if (!success) {
+                scanFailure();
+            }
         }
     }
 }
