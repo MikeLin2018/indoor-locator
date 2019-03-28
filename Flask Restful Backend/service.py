@@ -170,7 +170,7 @@ class Room(Resource):
             return Response(success=False, messages='Building does not exist.').text()
 
         # Check duplicate room by building_id, floor and name
-        if session.query(exists().where(and_(DB_objects.Building.id == args.building_id,
+        if session.query(exists().where(and_(DB_objects.Room.building_id == args.building_id,
                                              DB_objects.Room.floor == args.floor,
                                              func.lower(DB_objects.Room.name) == args.name.lower()))).scalar():
             return Response(success=False, messages="Room name duplicated").text()
@@ -431,10 +431,10 @@ class Predict(Resource):
 
         # Get All Buildings
         buildings = session.query(DB_objects.Building).filter(DB_objects.Building.training_status == "trained").filter(
-            and_(and_(and_(DB_objects.Building.longitude - args.longitude < radius,
-                           DB_objects.Building.longitude - args.longitude > nradius),
-                      DB_objects.Building.latitude - args.latitude < radius,
-                      DB_objects.Building.latitude - args.latitude > nradius))).all()
+            and_(DB_objects.Building.longitude - args.longitude < radius,
+                 DB_objects.Building.longitude - args.longitude > nradius,
+                 DB_objects.Building.latitude - args.latitude < radius,
+                 DB_objects.Building.latitude - args.latitude > nradius)).all()
         print("Lenge of Building for Prediction", len(buildings))
 
         # Coverage Test

@@ -61,6 +61,7 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
     private EditText name;
     private OkHttpClient client = new OkHttpClient();
     private LocationManager lm;
+    private String email;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -75,6 +76,8 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
         longitude = v.findViewById(R.id.new_building_longitude);
         latitude = v.findViewById(R.id.new_building_latitude);
         name = v.findViewById(R.id.new_building_name);
+
+        email = KeyValueDB.getEmail(getActivity());
 
         return v;
     }
@@ -204,7 +207,7 @@ public class NewBuildingFragment extends Fragment implements View.OnClickListene
                 .addFormDataPart("name", name.getText().toString())
                 .addFormDataPart("longitude", longitude.getText().toString())
                 .addFormDataPart("latitude", latitude.getText().toString())
-                .addFormDataPart("email", "lin.2453@osu.edu") // Hard coded email address.
+                .addFormDataPart("email", email)
                 .build();
 
 

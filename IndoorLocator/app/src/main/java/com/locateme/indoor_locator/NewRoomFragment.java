@@ -49,6 +49,7 @@ public class NewRoomFragment extends Fragment implements View.OnClickListener {
     private EditText name;
     private OkHttpClient client = new OkHttpClient();
     private int buildingID;
+    private String email;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class NewRoomFragment extends Fragment implements View.OnClickListener {
         name = v.findViewById(R.id.new_room_name);
 
         buildingID = getActivity().getIntent().getExtras().getInt("building_id");
+        email = KeyValueDB.getEmail(getActivity());
 
         return v;
     }
@@ -102,7 +104,7 @@ public class NewRoomFragment extends Fragment implements View.OnClickListener {
                 .addFormDataPart("name", name.getText().toString())
                 .addFormDataPart("floor", floor.getText().toString())
                 .addFormDataPart("building_id", String.valueOf(buildingID))
-                .addFormDataPart("email", "lin.2453@osu.edu") // TODO: Get email from user session.
+                .addFormDataPart("email", email)
                 .build();
 
         Request request = new Request.Builder()

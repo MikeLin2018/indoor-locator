@@ -81,7 +81,7 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
 
         roomID = getActivity().getIntent().getExtras().getInt("room_id");
         buildingID = getActivity().getIntent().getExtras().getInt("building_id");
-        email = "lin.2453@osu.edu";
+        email = KeyValueDB.getEmail(getActivity());
 
         // Initialize Variables
         scanCount = 0;
@@ -112,6 +112,12 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
         } catch (NullPointerException npe) {
             Log.e(TAG, "Could not set subtitle");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(wifiScanReceiver);
     }
 
     private void submitScanList() {
@@ -160,6 +166,8 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+
+
                 // Create and parse responseJSON
                 final String responseText = response.body().string();
                 JSONObject responseJSON = null;
@@ -172,8 +180,11 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
 
                 // Update UI by JSON response
                 getActivity().runOnUiThread(new Runnable() {
+
                     @Override
                     public void run() {
+                        collectButton.setEnabled(true);
+
                         if (finalResponseJSON != null) {
                             try {
                                 if (finalResponseJSON.getBoolean("success")) {
@@ -215,7 +226,11 @@ public class ApDataCollectFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.collect_button:
+                scanCount = 0;
+                failCount = 0;
+                mScansList.clear();
                 getScanResults();
+                collectButton.setEnabled(false);
                 break;
         }
     }
