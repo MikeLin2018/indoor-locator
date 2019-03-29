@@ -19,22 +19,31 @@
     <!--<string name="URL_ROOM">http://10.0.2.2:5000/room</string>-->
     <!--<string name="URL_TRAIN">http://10.0.2.2:5000/train</string>-->
     <!--<string name="URL_SCAN">http://10.0.2.2:5000/scan</string>-->
-    <!--  <string name="verify_user_URL">http://10.0.3.2:5000/user/verify</string>
-    <string name="create_user_URL">http://10.0.3.2:5000/user/new</string> -->
+    <!--<string name="URL_PREDICT">http://10.0.2.2:5000/predict</string>-->
+    <!--<string name="verify_user_URL">http://10.0.2.2:5000/user/verify</string>-->
+    <!--<string name="create_user_URL">http://10.0.2.2:5000/user/new</string>-->
+
+
+    <string name="URL_BUILDING">http://172.20.10.5:5000/building</string>
+    <string name="URL_ROOM">http://172.20.10.5:5000/room</string>
+    <string name="URL_TRAIN">http://172.20.10.5:5000/train</string>
+    <string name="URL_SCAN">http://172.20.10.5:5000/scan</string>
+    <string name="URL_PREDICT">http://172.20.10.5:5000/predict</string>
+    <string name="verify_user_URL">http://172.20.10.5:5000/user/verify</string>
+    <string name="create_user_URL">http://172.20.10.5:5000/user/new</string>
+
+    <!--<string name="URL_BUILDING">http://10.20.13.4:5000/building</string>-->
+    <!--<string name="URL_ROOM">http://10.20.13.4:5000/room</string>-->
+    <!--<string name="URL_TRAIN">http://10.20.13.4:5000/train</string>-->
+    <!--<string name="URL_SCAN">http://10.20.13.4:5000/scan</string>-->
+    <!--<string name="URL_PREDICT">http://10.20.13.4:5000/predict</string>-->
+    <!--<string name="CREATE_USER_URL">http://10.20.13.4:5000/user/new</string>-->
+    <!--<string name="verify_user_URL">http://10.20.13.4:5000/user/verify</string>-->
+    <!--<string name="create_user_URL">http://10.20.13.4:5000/user/new</string>-->
+
     <string name="room_collect_instruction">Instruction:\nPlease move around the selected room while scanning.\nMake sure the edges of the room, as well as the interier of the room are all scaned.\n\n</string>
     <string name="room_collect_button">Collect</string>
     <string name="prediction_button">Predict</string>
-
-
-    <string name="URL_BUILDING">http://10.20.13.4:5000/building</string>
-    <string name="URL_ROOM">http://10.20.13.4:5000/room</string>
-    <string name="URL_TRAIN">http://10.20.13.4:5000/train</string>
-    <string name="URL_SCAN">http://10.20.13.4:5000/scan</string>
-    <string name="URL_PREDICT">http://10.20.13.4:5000/predict</string>
-    <string name="CREATE_USER_URL">http://10.20.13.4:5000/user/new</string>
-    <string name="verify_user_URL">http://10.20.13.4:5000/user/verify</string>
-    <string name="create_user_URL">http://10.20.13.4:5000/user/new</string>
-
     <string name="title_activity_user_login">Sign in</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -59,27 +68,17 @@
     <string name="settings">Settings</string>
     <string name="scan">Scan</string>
     <string name="train">Train</string>
-    <string name="field_empty">This field is empty</string>
-    <string name="passwords_dont_match">Password don\'t match</string>
-    <string name="predict">Predict</string>
-    <string name="old_password">Old Password</string>
-    <string name="new_password">New Password</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="apply">Update Password</string>
-    <string name="cancel">Cancel</string>
-    <string name="login_name_label">Name</string>
-    
-
     <string name="title_activity_settings">Settings</string>
-    <string name="apply">Apply Changes</string>
-    <string name="cancel">Cancel</string>
+    <string name="field_empty">Field is Empty</string>
+    <string name="wrong_oldpass">Old password is wrong</string>
+    <string name="passwords_dont_match">Password does not match</string>
+    <string name="predict">Locate Me</string>
     <string name="old_password">Old Password</string>
     <string name="new_password">New Password</string>
-    <string name="confirm_password">Confirm Password</string>
-    <string name="wrong_oldpass">Old password is not correct</string>
-    <string name="passwords_dont_match">New password and confirm password must match</string>
-    <string name="field_empty">Please fill out all fields</string>
-    <string name="login_name_label">Username</string>
+    <string name="confirm_password">Confirm New Password</string>
+    <string name="apply">Apple Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="user_name">User Name</string>
 
 
 </resources>

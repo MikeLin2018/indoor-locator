@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".UserSignupFragment">
+
+
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -12,19 +14,19 @@
         android:text="@string/signup_button"
         android:gravity="center"
         android:textSize="50px" />
+
+
     <TextView
-        android:id="@+id/nameTextView"
+        android:id="@+id/usernameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/login_name_label" />
+        android:text="@string/user_name" />
 
     <EditText
-        android:id="@+id/editTextName"
+        android:id="@+id/signup_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress" />
-
+        android:ems="10" />
     <TextView
         android:id="@+id/emailTextView"
         android:layout_width="match_parent"
@@ -32,7 +34,7 @@
         android:text="@string/login_email_label" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/signup_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -45,7 +47,7 @@
         android:text="@string/login_password_label" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/signup_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -57,17 +59,11 @@
         android:text="@string/confirm_password" />
 
     <EditText
-        android:id="@+id/confirmPassword"
+        android:id="@+id/signup_confirmPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
-
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/login_button" />
 
     <Button
         android:id="@+id/signupButton"

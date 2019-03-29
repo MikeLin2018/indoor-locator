@@ -28,21 +28,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UserSignupFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UserSignupFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UserSignupFragment extends Fragment {
     private EditText emailEntered;
     private EditText usernameEntered;
     private EditText passwordEntered;
     private EditText confirmPasswordEntered;
-    private Button login;
     private Button signup;
     private TextView errorMessage;
     private OkHttpClient client = new OkHttpClient();
@@ -54,22 +44,14 @@ public class UserSignupFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_user_signup, container, false);
-        usernameEntered = (EditText) v.findViewById(R.id.editTextName);
-        emailEntered = (EditText) v.findViewById(R.id.editText);
-        passwordEntered = (EditText) v.findViewById(R.id.editText2);
-        confirmPasswordEntered= (EditText) v.findViewById(R.id.confirmPassword);
+        usernameEntered = (EditText) v.findViewById(R.id.signup_username);
+        emailEntered = (EditText) v.findViewById(R.id.signup_email);
+        passwordEntered = (EditText) v.findViewById(R.id.signup_password);
+        confirmPasswordEntered= (EditText) v.findViewById(R.id.signup_confirmPassword);
 
-        login = (Button) v.findViewById(R.id.loginButton);
+
         signup = (Button) v.findViewById(R.id.signupButton);
         errorMessage = (TextView) v.findViewById(R.id.errorMessage);
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                in = new Intent(getActivity(),UserLoginActivity.class);
-                startActivity(in);
-            }
-        });
-
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,6 +92,7 @@ public class UserSignupFragment extends Fragment {
         Log.d(TAG,atIndex+"");
         return (atIndex > 0) && (dotIndex != -1) && (dotIndex < email.length()-1);
     }
+
     public void signup(User u){
         final String mPass = u.getPassword();
         //Set up post body with provided password and email

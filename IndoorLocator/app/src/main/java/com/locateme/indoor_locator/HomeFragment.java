@@ -65,6 +65,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.home_settings_btn:
                 Toast.makeText(getActivity(), "Settings will come soon.", Toast.LENGTH_SHORT).show();
+                // TODO: Add password changing on server
+//                Intent preferenceIntent = new Intent(getActivity(), UserPreferenceActivity.class);
+//                startActivity(preferenceIntent);
                 break;
         }
     }

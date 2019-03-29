@@ -170,7 +170,7 @@ public class UserLoginFragment extends Fragment {
                                     Log.d(TAG, message.getString(0));
 
                                     // Tell user no User exists matching credentials provided
-                                    errorMessage.setText("User not found");
+                                    errorMessage.setText(message.getString(0));
                                     errorMessage.setVisibility(View.VISIBLE);
                                 }
                                 Log.d(TAG, responseText);
