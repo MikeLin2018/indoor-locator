@@ -28,52 +28,41 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
 public class UserSignupFragment extends Fragment {
     private EditText emailEntered;
     private EditText usernameEntered;
     private EditText passwordEntered;
     private EditText confirmPasswordEntered;
-    private Button login;
     private Button signup;
     private TextView errorMessage;
     private OkHttpClient client = new OkHttpClient();
     private final String TAG = "SIGNUP";
 
     Intent in;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_user_signup, container, false);
-        usernameEntered = (EditText) v.findViewById(R.id.editTextName);
-        emailEntered = (EditText) v.findViewById(R.id.editText);
-        passwordEntered = (EditText) v.findViewById(R.id.editText2);
-        confirmPasswordEntered = (EditText) v.findViewById(R.id.confirmPassword);
+        usernameEntered = (EditText) v.findViewById(R.id.signup_username);
+        emailEntered = (EditText) v.findViewById(R.id.signup_email);
+        passwordEntered = (EditText) v.findViewById(R.id.signup_password);
+        confirmPasswordEntered= (EditText) v.findViewById(R.id.signup_confirmPassword);
 
-        login = (Button) v.findViewById(R.id.loginButton);
+
         signup = (Button) v.findViewById(R.id.signupButton);
         errorMessage = (TextView) v.findViewById(R.id.errorMessage);
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                in = new Intent(getActivity(), UserLoginActivity.class);
-                startActivity(in);
-            }
-        });
-
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //login();
                 //Create a new user with first name set to empty string.  Will set upon confirming login
                 User u = new User(emailEntered.getText().toString(), passwordEntered.getText().toString(), usernameEntered.getText().toString());
-                Log.d(TAG, "email: " + u.getEmail());
-                Log.d(TAG, "password: " + u.getPassword());
-                Log.d(TAG, "username: " + u.getFname());
+                Log.d(TAG,"email: " + u.getEmail());
+                Log.d(TAG,"password: " + u.getPassword());
+                Log.d(TAG,"username: " + u.getFname());
 
-                if (u.getPassword().length() == 0 || u.getEmail().length() == 0 || u.getFname().length() == 0) {
+                if(u.getPassword().length() == 0 || u.getEmail().length() == 0 || u.getFname().length() == 0){
                     errorMessage.setText(R.string.field_empty);
                     errorMessage.setVisibility(View.VISIBLE);
                     return;
@@ -83,7 +72,7 @@ public class UserSignupFragment extends Fragment {
                     errorMessage.setVisibility(View.VISIBLE);
                     return;
                 }
-                if (!u.getPassword().equals(confirmPasswordEntered.getText().toString())) {
+                if(!u.getPassword().equals(confirmPasswordEntered.getText().toString())){
                     errorMessage.setText(R.string.passwords_dont_match);
                     errorMessage.setVisibility(View.VISIBLE);
                     return;
@@ -93,19 +82,18 @@ public class UserSignupFragment extends Fragment {
         });
         return v;
     }
-
-    public boolean validEmailForm(String email) {
+    public boolean validEmailForm(String email){
         //must have @ and .
         //@ is before . with at least one character in between
         //@ is not first character . is not last character
         int atIndex = email.indexOf('@');
-        int dotIndex = email.indexOf('.', atIndex + 2);
-        Log.d(TAG, dotIndex + "");
-        Log.d(TAG, atIndex + "");
-        return (atIndex > 0) && (dotIndex != -1) && (dotIndex < email.length() - 1);
+        int dotIndex = email.indexOf('.', atIndex+2);
+        Log.d(TAG,dotIndex+"");
+        Log.d(TAG,atIndex+"");
+        return (atIndex > 0) && (dotIndex != -1) && (dotIndex < email.length()-1);
     }
 
-    public void signup(User u) {
+    public void signup(User u){
         final String mPass = u.getPassword();
         //Set up post body with provided password and email
         RequestBody requestBody = new MultipartBody.Builder()
@@ -117,7 +105,7 @@ public class UserSignupFragment extends Fragment {
 
         //Send HTTP Request to new/user resource
         Request request = new Request.Builder()
-                .url(getString(R.string.CREATE_USER_URL))
+                .url(getString(R.string.create_user_URL))
                 .post(requestBody)
                 .build();
 
@@ -155,14 +143,14 @@ public class UserSignupFragment extends Fragment {
                                     String mName = data.getString("name");
                                     String mEmail = data.getString("email");
                                     JSONArray message = finalResponseJSON.getJSONArray("messages");
-                                    Log.d(TAG, message.getString(0));
+                                    Log.d(TAG,message.getString(0));
 
                                     Activity a = getActivity();
                                     KeyValueDB.setEmail(a, mEmail);
                                     KeyValueDB.setUserId(a, mID);
                                     KeyValueDB.setName(a, mName);
                                     KeyValueDB.setPassword(a, mPass);
-                                    in = new Intent(getActivity(), HomeActivity.class);
+                                    in = new Intent(getActivity(),HomeActivity.class);
                                     startActivity(in);
                                 } else {
                                     // If server response "fail"

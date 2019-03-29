@@ -6,6 +6,10 @@ import android.gesture.Prediction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +24,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Button trainButton;
     private Button predictButton;
     private Button settingButton;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +65,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.home_settings_btn:
                 Toast.makeText(getActivity(), "Settings will come soon.", Toast.LENGTH_SHORT).show();
+                // TODO: Add password changing on server
+//                Intent preferenceIntent = new Intent(getActivity(), UserPreferenceActivity.class);
+//                startActivity(preferenceIntent);
                 break;
         }
     }

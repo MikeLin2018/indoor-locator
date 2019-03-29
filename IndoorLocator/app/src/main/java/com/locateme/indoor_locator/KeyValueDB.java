@@ -16,7 +16,8 @@ public class KeyValueDB {
     }
 
     public static String getEmail(Context context) {
-        return getPrefs(context).getString("email_key", "default_username");
+
+        return getPrefs(context).getString("email_key", "default_email");
     }
 
     public static void setEmail(Context context, String input) {
