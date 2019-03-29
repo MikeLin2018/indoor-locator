@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="googlemap_token">AIzaSyAg15izDneNypnV5IXg_wh2bvImm2heRok</string>
+    <string name="mapbox_token">pk.eyJ1IjoibWlrZWxpbjIwMTgiLCJhIjoiY2p0bnI1OGU5MG9lYjQzcWc3ZTJtdDc5eCJ9.jD12sJ98SEwQB0Dek-_gzQ</string>
+</resources>

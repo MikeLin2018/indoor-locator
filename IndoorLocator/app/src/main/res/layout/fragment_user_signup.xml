@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".UserSignupFragment">
-
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -13,7 +12,6 @@
         android:text="@string/signup_button"
         android:gravity="center"
         android:textSize="50px" />
-
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="match_parent"
@@ -26,7 +24,6 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textEmailAddress" />
-
 
     <TextView
         android:id="@+id/emailTextView"
@@ -53,7 +50,6 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
-
     <TextView
         android:id="@+id/confirmPasswordTextView"
         android:layout_width="match_parent"
@@ -86,6 +82,7 @@
         android:text="TextView"
         android:visibility="invisible"
         android:textColor="#FF0000"
-        android:gravity="center" />
+        android:gravity="center"
+        />
 
 </LinearLayout>
