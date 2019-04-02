@@ -61,12 +61,15 @@ class User(DB):
     def hash_password(self, password):
         self.password = pwd_context.encrypt(password)
 
+    def get_hash_pass(self):
+        return self.password
+
     def verify_password(self, password):
         return pwd_context.verify(password, self.password)
 
 
 class database:
-    engine = create_engine('mysql+mysqlconnector://root:LinYuXiang@localhost:3306/indoor_locator_db')
+    engine = create_engine('mysql+mysqlconnector://mradey13:password@localhost:3306/indoor_locator_db')
     DBSession = sessionmaker(bind=engine)
 
     # new_room = User(name='Room 2', password=2, email="lin.2453@osu.edu")

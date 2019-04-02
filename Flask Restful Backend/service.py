@@ -2,7 +2,7 @@ import datetime
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 import DB_objects
-from sqlalchemy import exists, func, and_
+from sqlalchemy import exists, func, and_, update
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
@@ -84,6 +84,41 @@ class VerifyUser(Resource):
         else:
             return Response(success=False, messages="User email and password not match.").text()
 
+class UpdateUserPassword(Resource):
+    def put(self):
+        # Parse arguments
+        args = parser.parse_args()
+
+        # Check arguments exist
+        if None in [args.password, args.email]:
+            return Response.check_none_response([args.password, args.email], ['Password', 'Email']).text()
+
+        # Get Session
+        session = database.DBSession()
+
+        # Create user object to hash password
+        temp_user = DB_objects.User(name="", email="")
+        temp_user.hash_password(args.password)
+        hashed_pass = temp_user.get_hash_pass()
+
+        # Update user with email = args.email and commit
+        session.query(DB_objects.User).\
+            filter(DB_objects.User.email == args.email).\
+            update({"password": hashed_pass})
+        session.commit()
+
+        # Check to see if password changed and send response
+        user = session.query(DB_objects.User).filter(DB_objects.User.email == args.email).first()
+        if user is None:
+            return Response(success=False, messages="User is not found.").text()
+
+        if user.verify_password(args.password):
+            return Response(success=True, messages="User password updated.",
+                            data={"id": user.id, "name": user.name, "email": user.email}).text()
+        else:
+            return Response(success=False, messages="Password not updated").text()
+
+
 
 class Building(Resource):
     # Add a new building
@@ -141,6 +176,43 @@ class Building(Resource):
                                "username": session.query(DB_objects.User).filter(
                                    DB_objects.User.id == building.user_id).first().name} for
                               building in buildings]).text()
+    def delete(self):
+        # Parse arguments
+        building_parser = parser.copy()
+        building_parser.add_argument('id', type=int, help="No building id specified.")
+        args = building_parser.parse_args()
+
+        # Check arguments exist
+        if None in [args.password, args.email, args.id]:
+            return Response.check_none_response([args.password, args.email, args.id], ['Password', 'Email', 'ID']).text()
+
+        # Get Session
+        session = database.DBSession()
+
+        # Get the user sending delete request
+        user = session.query(DB_objects.User).filter(DB_objects.User.email == args.email).first()
+        if user is None:
+            return Response(success=False, messages="User is not found.").text()
+        if not user.verify_password(args.password):
+            return Response(success=False, messages="User password not correct.",
+                            data={"id": user.id, "name": user.name, "email": user.email}).text()
+        # Get building info of id for building to be deleted
+        building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.id).first()
+
+        # Delete the building with id = args.id and userid = user.id
+        session.query(DB_objects.Building).\
+            filter(DB_objects.Building.id == args.id, DB_objects.Building.user_id == user.id).\
+            delete()
+        session.commit()
+
+        # Check to see if password changed and send response
+        deleted_building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.id).first()
+        if deleted_building is None:
+            return Response(success=True, messages="Building deleted.",
+                            data={"id": building.id, "name": building.name, "longitude": float(building.longitude), "latitude": float(building.latitude)}).text()
+        else:
+            return Response(success=False, messages="Building not deleted").text()
+
 
 
 class Room(Resource):
@@ -207,6 +279,43 @@ class Room(Resource):
         return Response(success=True, messages="Room data lookup success.",
                         data=[{"room_id": room.id, "building_id": room.building_id, "name": room.name,
                                "floor": room.floor} for room in rooms]).text()
+    def delete(self):
+        # Parse arguments
+        room_parser = parser.copy()
+        room_parser.add_argument('id', type=int, help="No room id specified.")
+        room_parser.add_argument('building_id', type=int, help="No building id specified.")
+        args = room_parser.parse_args()
+
+        # Check arguments exist
+        if None in [args.password, args.email, args.id, args.building_id]:
+            return Response.check_none_response([args.password, args.email, args.id], ['Password', 'Email', 'ID', 'Building_id']).text()
+
+        # Get Session
+        session = database.DBSession()
+
+        # Get the user sending delete request
+        user = session.query(DB_objects.User).filter(DB_objects.User.email == args.email).first()
+        if user is None:
+            return Response(success=False, messages="User is not found.").text()
+        if not user.verify_password(args.password):
+            return Response(success=False, messages="User password not correct.",
+                            data={"id": user.id, "name": user.name, "email": user.email}).text()
+        # Get room info of id for building to be deleted
+        room = session.query(DB_objects.Room).filter(DB_objects.Room.id == args.id).first()
+
+        # Delete the room with id = args.id and userid = user.id
+        session.query(DB_objects.Room).\
+            filter(DB_objects.Room.id == args.id, DB_objects.Room.user_id == user.id, DB_objects.Room.building_id == args.building_id).\
+            delete()
+        session.commit()
+
+        # Check to see if password changed and send response
+        deleted_room = session.query(DB_objects.Room).filter(DB_objects.Room.id == args.id).first()
+        if deleted_room is None:
+            return Response(success=True, messages="Room deleted.",
+                            data={"id": room.id, "name": room.name, "building_id": room.building_id, "floor": room.floor}).text()
+        else:
+            return Response(success=False, messages="Room not deleted").text()
 
 
 class Scan(Resource):
@@ -597,6 +706,7 @@ class Dataset:
 api.add_resource(HelloWorld, '/')
 api.add_resource(NewUser, '/user/new')
 api.add_resource(VerifyUser, '/user/verify')
+api.add_resource(UpdateUserPassword, '/user/update')
 api.add_resource(Building, '/building')
 api.add_resource(Room, '/room')
 api.add_resource(Scan, '/scan')
