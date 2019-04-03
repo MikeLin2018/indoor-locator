@@ -84,6 +84,7 @@ class VerifyUser(Resource):
         else:
             return Response(success=False, messages="User email and password not match.").text()
 
+
 class UpdateUserPassword(Resource):
     def put(self):
         # Parse arguments
@@ -102,8 +103,8 @@ class UpdateUserPassword(Resource):
         hashed_pass = temp_user.get_hash_pass()
 
         # Update user with email = args.email and commit
-        session.query(DB_objects.User).\
-            filter(DB_objects.User.email == args.email).\
+        session.query(DB_objects.User). \
+            filter(DB_objects.User.email == args.email). \
             update({"password": hashed_pass})
         session.commit()
 
@@ -117,7 +118,6 @@ class UpdateUserPassword(Resource):
                             data={"id": user.id, "name": user.name, "email": user.email}).text()
         else:
             return Response(success=False, messages="Password not updated").text()
-
 
 
 class Building(Resource):
@@ -176,15 +176,17 @@ class Building(Resource):
                                "username": session.query(DB_objects.User).filter(
                                    DB_objects.User.id == building.user_id).first().name} for
                               building in buildings]).text()
+
     def delete(self):
         # Parse arguments
         building_parser = parser.copy()
-        building_parser.add_argument('id', type=int, help="No building id specified.")
+        building_parser.add_argument('building_id', type=int, help="No building id specified.")
         args = building_parser.parse_args()
 
         # Check arguments exist
-        if None in [args.password, args.email, args.id]:
-            return Response.check_none_response([args.password, args.email, args.id], ['Password', 'Email', 'ID']).text()
+        if None in [args.password, args.email, args.building_id]:
+            return Response.check_none_response([args.password, args.email, args.building_id],
+                                                ['Password', 'Email', 'building_id']).text()
 
         # Get Session
         session = database.DBSession()
@@ -196,23 +198,28 @@ class Building(Resource):
         if not user.verify_password(args.password):
             return Response(success=False, messages="User password not correct.",
                             data={"id": user.id, "name": user.name, "email": user.email}).text()
+
         # Get building info of id for building to be deleted
-        building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.id).first()
+        building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.building_id).first()
+
+        # Prevent Delete when building creator is not the user
+        if building.user_id is not user.id:
+            return Response(success=False, messages="Only building creator can delete a building.").text()
 
         # Delete the building with id = args.id and userid = user.id
-        session.query(DB_objects.Building).\
-            filter(DB_objects.Building.id == args.id, DB_objects.Building.user_id == user.id).\
+        session.query(DB_objects.Building). \
+            filter(DB_objects.Building.id == args.building_id, DB_objects.Building.user_id == user.id). \
             delete()
         session.commit()
 
         # Check to see if password changed and send response
-        deleted_building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.id).first()
+        deleted_building = session.query(DB_objects.Building).filter(DB_objects.Building.id == args.building_id).first()
         if deleted_building is None:
             return Response(success=True, messages="Building deleted.",
-                            data={"id": building.id, "name": building.name, "longitude": float(building.longitude), "latitude": float(building.latitude)}).text()
+                            data={"id": building.id, "name": building.name, "longitude": float(building.longitude),
+                                  "latitude": float(building.latitude)}).text()
         else:
             return Response(success=False, messages="Building not deleted").text()
-
 
 
 class Room(Resource):
@@ -221,7 +228,7 @@ class Room(Resource):
         # Parse arguments
         room_parser = parser.copy()
         room_parser.add_argument('building_id', type=str, help="No building_id specified.")
-        room_parser.add_argument('floor', type=str, help="No floor specified.")
+        room_parser.add_argument('floor', type=int)
         args = room_parser.parse_args()
 
         # Check arguments exist
@@ -267,6 +274,12 @@ class Room(Resource):
         room_parser.add_argument('building_id', type=str, help="No building_id specified.")
         args = room_parser.parse_args()
 
+        building_parser = parser.copy()
+        building_parser.add_argument('building_id', type=int, help="No building id specified.")
+        building_parser.add_argument('email', type=str)
+        building_parser.add_argument('password', type=str)
+        args = building_parser.parse_args()
+
         # Check email is not None
         if None in [args.building_id]:
             return Response.check_none_response([args.building_id], ['Building_id'])
@@ -279,16 +292,17 @@ class Room(Resource):
         return Response(success=True, messages="Room data lookup success.",
                         data=[{"room_id": room.id, "building_id": room.building_id, "name": room.name,
                                "floor": room.floor} for room in rooms]).text()
+
     def delete(self):
         # Parse arguments
         room_parser = parser.copy()
-        room_parser.add_argument('id', type=int, help="No room id specified.")
-        room_parser.add_argument('building_id', type=int, help="No building id specified.")
+        room_parser.add_argument('room_id', type=int, help="No building id specified.")
         args = room_parser.parse_args()
 
         # Check arguments exist
-        if None in [args.password, args.email, args.id, args.building_id]:
-            return Response.check_none_response([args.password, args.email, args.id], ['Password', 'Email', 'ID', 'Building_id']).text()
+        if None in [args.password, args.email, args.room_id]:
+            return Response.check_none_response([args.password, args.email, args.id],
+                                                ['Password', 'Email', 'room_id']).text()
 
         # Get Session
         session = database.DBSession()
@@ -300,20 +314,26 @@ class Room(Resource):
         if not user.verify_password(args.password):
             return Response(success=False, messages="User password not correct.",
                             data={"id": user.id, "name": user.name, "email": user.email}).text()
+
         # Get room info of id for building to be deleted
-        room = session.query(DB_objects.Room).filter(DB_objects.Room.id == args.id).first()
+        room = session.query(DB_objects.Room).filter(DB_objects.Room.id == args.room_id).first()
+
+        # Prevent Delete when building creator is not the user
+        if room.user_id is not user.id:
+            return Response(success=False, messages="Only building creator can delete a building.").text()
 
         # Delete the room with id = args.id and userid = user.id
-        session.query(DB_objects.Room).\
-            filter(DB_objects.Room.id == args.id, DB_objects.Room.user_id == user.id, DB_objects.Room.building_id == args.building_id).\
+        session.query(DB_objects.Room). \
+            filter(DB_objects.Room.id == args.room_id, DB_objects.Room.user_id == user.id). \
             delete()
         session.commit()
 
         # Check to see if password changed and send response
-        deleted_room = session.query(DB_objects.Room).filter(DB_objects.Room.id == args.id).first()
+        deleted_room = session.query(DB_objects.Room).filter(DB_objects.Room.id == args.room_id).first()
         if deleted_room is None:
             return Response(success=True, messages="Room deleted.",
-                            data={"id": room.id, "name": room.name, "building_id": room.building_id, "floor": room.floor}).text()
+                            data={"id": room.id, "name": room.name, "building_id": room.building_id,
+                                  "floor": room.floor}).text()
         else:
             return Response(success=False, messages="Room not deleted").text()
 
@@ -559,6 +579,11 @@ class Predict(Resource):
                 for apdata in scan:
                     if apdata["BSSID"] in BSSIDs:
                         building_count[building.id] += 1
+
+        # Response if no building is found in the range
+        if (len(building_count)) == 0:
+            return Response(success=False, messages="No trained building is found in the 100m radius.").text()
+
         # Find the building with maximum count
         best_building_id = max(building_count.items(), key=operator.itemgetter(1))[0]
 

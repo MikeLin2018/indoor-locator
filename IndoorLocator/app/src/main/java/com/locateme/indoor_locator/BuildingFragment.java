@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,6 +36,7 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -60,6 +62,11 @@ public class BuildingFragment extends Fragment {
             buildingAdapter = new BuildingAdapter(mBuildingList);
             buildingRecyclerView.setAdapter(buildingAdapter);
             buildingRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+            // Add Swipe to delete
+            ItemTouchHelper touchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(buildingAdapter));
+            touchHelper.attachToRecyclerView(buildingRecyclerView);
+
         }
 
         return v;
@@ -203,7 +210,7 @@ public class BuildingFragment extends Fragment {
         }
     }
 
-    private class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
+    public class BuildingAdapter extends RecyclerView.Adapter<BuildingHolder> {
 
         private List<Building> buildingList;
 
@@ -226,6 +233,78 @@ public class BuildingFragment extends Fragment {
         @Override
         public int getItemCount() {
             return this.buildingList.size();
+        }
+
+        public void deleteItem(int position) {
+            // Delete building item from recycler view
+            String building_id = String.valueOf(mBuildingList.get(position).getID());
+            mBuildingList.remove(position);
+            buildingAdapter.notifyDataSetChanged();
+
+            // Build URL
+            HttpUrl url = HttpUrl.parse(getString(R.string.URL_BUILDING)).newBuilder()
+                    .addQueryParameter("email", KeyValueDB.getEmail(getActivity()))
+                    .addQueryParameter("building_id", building_id)
+                    .addQueryParameter("password", KeyValueDB.getPassword(getActivity()))
+                    .build();
+
+            // build Request to get a list of building
+            Request request = new Request.Builder()
+                    .url(url)
+                    .delete()
+                    .build();
+
+            // Make async request to update building list
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    Log.d(TAG, "Delete building call failure");
+                    Log.d(TAG, e.toString());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    // Create and parse responseJSON
+                    final String responseText = response.body().string();
+                    JSONObject responseJSON = null;
+                    try {
+                        responseJSON = new JSONObject(responseText);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    JSONObject finalResponseJSON = responseJSON;
+
+                    // Update UI by JSON response
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (finalResponseJSON != null) {
+                                try {
+                                    if (finalResponseJSON.getBoolean("success")) {
+                                        // If server resposne "success"
+                                        JSONArray message = finalResponseJSON.getJSONArray("messages");
+                                        Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
+                                        getBuildingList();
+                                    } else {
+                                        // If server response "fail"
+                                        JSONArray message = finalResponseJSON.getJSONArray("messages");
+                                        Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
+                                    }
+                                    Log.d(TAG, responseText);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+
+        public Object getContext() {
+            return getActivity();
         }
     }
 

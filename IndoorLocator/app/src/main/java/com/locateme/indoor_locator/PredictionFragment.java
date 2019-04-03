@@ -300,6 +300,7 @@ public class PredictionFragment extends Fragment implements View.OnClickListener
 
     public void scan() {
         mScanList.clear();
+        scanCount = 0;
         Toast.makeText(getActivity(), "Scanning WiFi ...", Toast.LENGTH_SHORT).show();
 
         IntentFilter intentFilter = new IntentFilter();

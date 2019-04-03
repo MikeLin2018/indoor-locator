@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +65,10 @@ public class RoomFragment extends Fragment {
             roomAdapter = new RoomAdapter(mRoomList);
             roomRecyclerView.setAdapter(roomAdapter);
             roomRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+            // Add Swipe to delete
+            ItemTouchHelper touchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(roomAdapter));
+            touchHelper.attachToRecyclerView(roomRecyclerView);
         }
 
         return v;
@@ -130,7 +135,7 @@ public class RoomFragment extends Fragment {
                                     mRoomList.clear();
                                     for (int i = 0; i < data.length(); i++) {
                                         JSONObject room = data.getJSONObject(i);
-                                        mRoomList.add(new Room(room.getInt("room_id"),room.getString("name"), room.getInt("floor")));
+                                        mRoomList.add(new Room(room.getInt("room_id"), room.getString("name"), room.getInt("floor")));
                                     }
                                     roomAdapter.notifyDataSetChanged();
 
@@ -172,18 +177,18 @@ public class RoomFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            switch(v.getId()){
+            switch (v.getId()) {
                 case R.id.list_item_room_collect_button:
-                    Intent intent = new Intent(getActivity(),ApDataCollectActivity.class);
-                    intent.putExtra("room_id",room.getID());
-                    intent.putExtra("building_id",parentBuildingID);
+                    Intent intent = new Intent(getActivity(), ApDataCollectActivity.class);
+                    intent.putExtra("room_id", room.getID());
+                    intent.putExtra("building_id", parentBuildingID);
                     startActivity(intent);
                     break;
             }
         }
     }
 
-    private class RoomAdapter extends RecyclerView.Adapter<RoomHolder> {
+    public class RoomAdapter extends RecyclerView.Adapter<RoomHolder> {
 
         private List<Room> roomList;
 
@@ -206,6 +211,78 @@ public class RoomFragment extends Fragment {
         @Override
         public int getItemCount() {
             return this.roomList.size();
+        }
+
+        public Object getContext() {
+            return getActivity();
+        }
+
+        public void deleteItem(int position) {
+            // Delete building item from recycler view
+            String room_id = String.valueOf(mRoomList.get(position).getID());
+            mRoomList.remove(position);
+            roomAdapter.notifyDataSetChanged();
+
+            // Build URL
+            HttpUrl url = HttpUrl.parse(getString(R.string.URL_ROOM)).newBuilder()
+                    .addQueryParameter("email", KeyValueDB.getEmail(getActivity()))
+                    .addQueryParameter("room_id", room_id)
+                    .addQueryParameter("password", KeyValueDB.getPassword(getActivity()))
+                    .build();
+
+            // build Request to get a list of building
+            Request request = new Request.Builder()
+                    .url(url)
+                    .delete()
+                    .build();
+
+            // Make async request to update building list
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    Log.d(TAG, "Delete room call failure");
+                    Log.d(TAG, e.toString());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    // Create and parse responseJSON
+                    final String responseText = response.body().string();
+                    JSONObject responseJSON = null;
+                    try {
+                        responseJSON = new JSONObject(responseText);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    JSONObject finalResponseJSON = responseJSON;
+
+                    // Update UI by JSON response
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (finalResponseJSON != null) {
+                                try {
+                                    if (finalResponseJSON.getBoolean("success")) {
+                                        // If server resposne "success"
+                                        JSONArray message = finalResponseJSON.getJSONArray("messages");
+                                        Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
+                                        getRoomList();
+                                    } else {
+                                        // If server response "fail"
+                                        JSONArray message = finalResponseJSON.getJSONArray("messages");
+                                        Toast.makeText(getActivity(), message.getString(0), Toast.LENGTH_SHORT).show();
+                                    }
+                                    Log.d(TAG, responseText);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+
+                }
+            });
         }
     }
 
