@@ -1,6 +1,8 @@
 package com.locateme.indoor_locator;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -63,10 +65,38 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
         if (mAdapter instanceof BuildingFragment.BuildingAdapter) {
-            ((BuildingFragment.BuildingAdapter) mAdapter).deleteItem(position);
+           // ((BuildingFragment.BuildingAdapter) mAdapter).deleteItem(position);
+              new AlertDialog.Builder(viewHolder.itemView.getContext())
+                      .setTitle("Warning")
+                      .setMessage("want to delete?")
+                      .setPositiveButton("OK",
+                              new DialogInterface.OnClickListener() {
+                                  public void onClick(DialogInterface dialog, int which) {
+                                      ((BuildingFragment.BuildingAdapter) mAdapter).deleteItem(position);
+                                  }
+                              })
+                      .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int which) {
+                              mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                          }
+                      }).create().show();
+
         } else if (mAdapter instanceof RoomFragment.RoomAdapter) {
-            ((RoomFragment.RoomAdapter) mAdapter).deleteItem(position);
+            new AlertDialog.Builder(viewHolder.itemView.getContext())
+                    .setTitle("Warning")
+                    .setMessage("want to delete?")
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                        ((RoomFragment.RoomAdapter) mAdapter).deleteItem(position);
+                                }
+                            })
+                    .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                        }
+                    }).create().show();
         }
 
     }
+
 }

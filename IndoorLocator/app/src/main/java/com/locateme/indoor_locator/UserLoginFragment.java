@@ -1,14 +1,10 @@
 package com.locateme.indoor_locator;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,8 +21,6 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -170,8 +163,18 @@ public class UserLoginFragment extends Fragment {
                                     Log.d(TAG, message.getString(0));
 
                                     // Tell user no User exists matching credentials provided
-                                    errorMessage.setText(message.getString(0));
-                                    errorMessage.setVisibility(View.VISIBLE);
+                                    //                                    errorMessage.setText(message.getString(0));
+//                                    errorMessage.setVisibility(View.VISIBLE);
+                                    //Add dialoge
+                                    Bundle bundl = new Bundle();
+                                    bundl.putString("errLogin_msg", message.toString());
+                                    FragmentManager manager = getFragmentManager();
+                                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+
+                                    fragment.setArguments(bundl);
+                                    if (manager != null) {
+                                        fragment.show(manager, "login_error");
+                                    }
                                 }
                                 Log.d(TAG, responseText);
                             } catch (JSONException e) {
