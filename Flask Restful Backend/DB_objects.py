@@ -69,7 +69,7 @@ class User(DB):
 
 
 class database:
-    engine = create_engine('mysql+mysqlconnector://mradey13:password@localhost:3306/indoor_locator_db')
+    engine = create_engine('mysql+mysqlconnector://root:password@localhost:3306/indoor_locator_db')
     DBSession = sessionmaker(bind=engine)
 
     # new_room = User(name='Room 2', password=2, email="lin.2453@osu.edu")

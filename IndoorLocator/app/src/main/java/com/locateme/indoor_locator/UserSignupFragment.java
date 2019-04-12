@@ -1,11 +1,10 @@
 package com.locateme.indoor_locator;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +50,7 @@ public class UserSignupFragment extends Fragment {
 
 
         signup = (Button) v.findViewById(R.id.signupButton);
-        errorMessage = (TextView) v.findViewById(R.id.errorMessage);
+        errorMessage = (TextView) v.findViewById(R.id.errorMessage2);
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,17 +63,54 @@ public class UserSignupFragment extends Fragment {
 
                 if(u.getPassword().length() == 0 || u.getEmail().length() == 0 || u.getFname().length() == 0){
                     errorMessage.setText(R.string.field_empty);
-                    errorMessage.setVisibility(View.VISIBLE);
+//                    errorMessage.setVisibility(View.VISIBLE);
+                    Bundle bundl = new Bundle();
+                    bundl.putString("errLogin_msg", "Filed is empty");
+                    FragmentManager manager = getFragmentManager();
+                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+                    fragment.setArguments(bundl);
+                    if (manager != null) {
+                        fragment.show(manager, "login_error");
+                    }
                     return;
                 }
                 if (!validEmailForm(u.getEmail())) {
-                    errorMessage.setText("Email must be of the form 'email@example.com");
-                    errorMessage.setVisibility(View.VISIBLE);
+                    errorMessage.setText(R.string.error_invalid_email);
+//                    errorMessage.setVisibility(View.VISIBLE);
+                    Bundle bundl = new Bundle();
+                    bundl.putString("errLogin_msg", "Email must be of the form 'email@example.com");
+                    FragmentManager manager = getFragmentManager();
+                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+                    fragment.setArguments(bundl);
+                    if (manager != null) {
+                        fragment.show(manager, "login_error");
+                    }
                     return;
                 }
                 if(!u.getPassword().equals(confirmPasswordEntered.getText().toString())){
-                    errorMessage.setText(R.string.passwords_dont_match);
-                    errorMessage.setVisibility(View.VISIBLE);
+                    errorMessage.setText(R.string.error_invalid_password);
+//                    errorMessage.setVisibility(View.VISIBLE);
+                    Bundle bundl = new Bundle();
+                    bundl.putString("errLogin_msg", "Passwords did not  match");
+                    FragmentManager manager = getFragmentManager();
+                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+                    fragment.setArguments(bundl);
+                    if (manager != null) {
+                        fragment.show(manager, "login_error");
+                    }
+                    return;
+                }
+                if (!validPasswordForm(u.getPassword())) {
+                    errorMessage.setText(R.string.error_invalid_password);
+//                    errorMessage.setVisibility(View.VISIBLE);
+                    Bundle bundl = new Bundle();
+                    bundl.putString("errLogin_msg", "1) Password much contain > 5 characters 2) Atleast one numeric character");
+                    FragmentManager manager = getFragmentManager();
+                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+                    fragment.setArguments(bundl);
+                    if (manager != null) {
+                        fragment.show(manager, "login_error");
+                    }
                     return;
                 }
                 signup(u);
@@ -88,9 +124,34 @@ public class UserSignupFragment extends Fragment {
         //@ is not first character . is not last character
         int atIndex = email.indexOf('@');
         int dotIndex = email.indexOf('.', atIndex+2);
-        Log.d(TAG,dotIndex+"");
-        Log.d(TAG,atIndex+"");
+        //Log.d(TAG,dotIndex+"");
+        //Log.d(TAG,atIndex+"");
         return (atIndex > 0) && (dotIndex != -1) && (dotIndex < email.length()-1);
+    }
+
+    public static boolean validPasswordForm(String password) {
+        int charCount = 0;
+        int numCount = 0;
+        if (password.length() < 6)
+            return false;
+        else
+            return true;
+//        for (int i = 0; i < password.length(); i++) {
+//            char ch = password.charAt(i);
+//            if (is_Numeric(ch)) numCount++;
+//            else if (is_Letter(ch)) charCount++;
+//            else return false;
+//        }
+//        return (charCount >= 2 && numCount >= 2);
+    }
+
+    public static boolean is_Letter(char ch) {
+        ch = Character.toUpperCase(ch);
+        return (ch >= 'A' && ch <= 'Z');
+    }
+
+    public static boolean is_Numeric(char ch) {
+        return (ch >= '0' && ch <= '9');
     }
 
     public void signup(User u){
@@ -158,8 +219,17 @@ public class UserSignupFragment extends Fragment {
                                     Log.d(TAG, message.getString(0));
 
                                     // Tell user no User exists matching credentials provided
-                                    errorMessage.setText("User not created");
-                                    errorMessage.setVisibility(View.VISIBLE);
+//                                    errorMessage.setText("User not created");
+//                                    errorMessage.setVisibility(View.VISIBLE);
+                                    Bundle bundl = new Bundle();
+                                    bundl.putString("errLogin_msg", message.toString());
+                                    FragmentManager manager = getFragmentManager();
+                                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+
+                                    fragment.setArguments(bundl);
+                                    if (manager != null) {
+                                        fragment.show(manager, "login_error");
+                                    }
                                 }
                                 Log.d(TAG, responseText);
                             } catch (JSONException e) {
