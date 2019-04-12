@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c51f5c24-7f3c-4649-88ab-dbee32e2a7c0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/androidTest/java/com/locateme/indoor_locator/ApDataScanFragmentTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/androidTest/java/com/locateme/indoor_locator/UserLoginFragmentTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/androidTest/java/com/locateme/indoor_locator/UserLoginFragmentTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserLoginFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserLoginFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserSignupFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserSignupFragment.java" afterDir="false" />
-    </list>
+    <list default="true" id="c51f5c24-7f3c-4649-88ab-dbee32e2a7c0" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +81,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="571" />
     <option name="width" value="1275" />
     <option name="height" value="1335" />
