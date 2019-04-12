@@ -51,7 +51,7 @@ public class UserLoginFragment extends Fragment {
         passwordEntered = (EditText) v.findViewById(R.id.editText2);
         login = (Button) v.findViewById(R.id.loginButton);
         signup = (Button) v.findViewById(R.id.signupButton);
-        errorMessage = (TextView) v.findViewById(R.id.errorMessage);
+        errorMessage = (TextView) v.findViewById(R.id.errorMessage_login);
 
 
         login.setOnClickListener(new View.OnClickListener() {
@@ -64,12 +64,30 @@ public class UserLoginFragment extends Fragment {
                 Log.d(TAG,"password: " + u.getPassword());
                 if(u.getPassword().length() == 0 || u.getEmail().length() == 0){
                     errorMessage.setText(R.string.field_empty);
-                    errorMessage.setVisibility(View.VISIBLE);
+                    //errorMessage.setVisibility(View.VISIBLE);
+                    Bundle bundl = new Bundle();
+                    bundl.putString("errLogin_msg", "Field is Empty");
+                    FragmentManager manager = getFragmentManager();
+                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+
+                    fragment.setArguments(bundl);
+                    if (manager != null) {
+                        fragment.show(manager, "login_error");
+                    }
                     return;
                 }
                 if (!validEmailForm(u.getEmail())) {
-                    errorMessage.setText("Email must be of the form 'email@example.com");
-                    errorMessage.setVisibility(View.VISIBLE);
+                    errorMessage.setText(R.string.error_invalid_email);
+                    Bundle bundl = new Bundle();
+                    bundl.putString("errLogin_msg", "Email must be of the form 'email@example.com");
+                    FragmentManager manager = getFragmentManager();
+                    LoginErrorDialogFragment fragment = new LoginErrorDialogFragment();
+
+                    fragment.setArguments(bundl);
+                    if (manager != null) {
+                        fragment.show(manager, "login_error");
+                    }
+                    //errorMessage.setVisibility(View.VISIBLE);
                     return;
                 }
                 login(u);
@@ -97,6 +115,7 @@ public class UserLoginFragment extends Fragment {
         Log.d(TAG,atIndex+"");
         return (atIndex > 0) && (dotIndex != -1) && (dotIndex < email.length()-1);
     }
+
 
 
     private void login(User u) {

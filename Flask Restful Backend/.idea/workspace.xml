@@ -2,14 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c51f5c24-7f3c-4649-88ab-dbee32e2a7c0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/LoginErrorDialogFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DB_objects.py" beforeDir="false" afterPath="$PROJECT_DIR$/DB_objects.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IndoorLocator/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/androidTest/java/com/locateme/indoor_locator/ApDataScanFragmentTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/androidTest/java/com/locateme/indoor_locator/UserLoginFragmentTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/androidTest/java/com/locateme/indoor_locator/UserLoginFragmentTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserLoginFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserLoginFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserSignupFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/../IndoorLocator/app/src/main/java/com/locateme/indoor_locator/UserSignupFragment.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,7 +19,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/service.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
+            <state relative-caret-position="459">
               <caret line="37" column="73" selection-start-line="37" selection-start-column="73" selection-end-line="37" selection-end-column="73" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -34,7 +31,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/indoor_locator_db.sql">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1523">
+            <state relative-caret-position="2652">
               <caret line="156" selection-start-line="156" selection-end-line="156" />
             </state>
           </provider>
@@ -43,7 +40,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DB_objects.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="251">
+            <state relative-caret-position="231">
               <caret line="76" selection-start-line="76" selection-end-line="76" />
               <folding>
                 <element signature="e#0#107#0" expanded="true" />
@@ -90,7 +87,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="571" />
     <option name="width" value="1275" />
     <option name="height" value="1335" />
@@ -103,6 +100,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -114,7 +112,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -213,9 +210,9 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1519" height="977" extended-state="6" />
+    <frame x="-7" y="-7" width="1519" height="977" extended-state="7" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18353577" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.10053981" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -236,24 +233,31 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/db.sql" />
-    <entry file="file://$PROJECT_DIR$/DB_objects.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="76" selection-start-line="76" selection-end-line="76" />
-          <folding>
-            <element signature="e#0#107#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/user.py" />
     <entry file="file://$PROJECT_DIR$/response.py" />
     <entry file="file://$PROJECT_DIR$/service.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
+        <state relative-caret-position="459">
           <caret line="37" column="73" selection-start-line="37" selection-start-column="73" selection-end-line="37" selection-end-column="73" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/indoor_locator_db.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2652">
+          <caret line="156" selection-start-line="156" selection-end-line="156" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DB_objects.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="76" selection-start-line="76" selection-end-line="76" />
+          <folding>
+            <element signature="e#0#107#0" expanded="true" />
           </folding>
         </state>
       </provider>

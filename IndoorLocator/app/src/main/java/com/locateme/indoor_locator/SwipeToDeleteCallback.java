@@ -68,7 +68,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
            // ((BuildingFragment.BuildingAdapter) mAdapter).deleteItem(position);
               new AlertDialog.Builder(viewHolder.itemView.getContext())
                       .setTitle("Warning")
-                      .setMessage("want to delete?")
+                      .setMessage("By proceeding information related to this building and all rooms within the building, and data collected will be deleted")
                       .setPositiveButton("OK",
                               new DialogInterface.OnClickListener() {
                                   public void onClick(DialogInterface dialog, int which) {
@@ -84,7 +84,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         } else if (mAdapter instanceof RoomFragment.RoomAdapter) {
             new AlertDialog.Builder(viewHolder.itemView.getContext())
                     .setTitle("Warning")
-                    .setMessage("want to delete?")
+                    .setMessage("By proceeding information related to this room and data collected will be deleted")
                     .setPositiveButton("OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {

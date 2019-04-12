@@ -38,7 +38,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:1.10.19'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation ("com.android.support.test.espresso:espresso-intents:3.0.2")
     androidTestImplementation 'com.21buttons:fragment-test-rule:1.0.0'
     // OK Http
     implementation 'com.squareup.okhttp3:okhttp:3.14.0'
@@ -56,7 +58,5 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.2.0'
     implementation 'com.jakewharton.timber:timber:4.6.0'
 
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test:rules:1.1.0'
+
 }
