@@ -50,6 +50,11 @@ public class UserLoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //Hide the navigation bar
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN);
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_user_login, container, false);
         email = (TextView) v.findViewById(R.id.emailTextView);
