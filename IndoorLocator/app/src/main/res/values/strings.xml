@@ -26,23 +26,23 @@
     <!--<string name="update_password_URL">http://10.0.3.2:5000/user/update</string>-->
 
 
-    <!--<string name="URL_BUILDING">http://10.0.2.2:5000/building</string>-->
-    <!--<string name="URL_ROOM">http://10.0.2.2:5000/room</string>-->
-    <!--<string name="URL_TRAIN">http://10.0.2.2:5000/train</string>-->
-    <!--<string name="URL_SCAN">http://10.0.2.2:5000/scan</string>-->
-    <!--<string name="URL_PREDICT">http://10.0.2.2:5000/predict</string>-->
-    <!--<string name="verify_user_URL">http://10.0.2.2:5000/user/verify</string>-->
-    <!--<string name="create_user_URL">http://10.0.2.2:5000/user/new</string>-->
-    <!--<string name="update_password_URL">http://10.0.2.2:5000/user/update</string>-->
+    <string name="URL_BUILDING">http://10.0.2.2:5000/building</string>
+    <string name="URL_ROOM">http://10.0.2.2:5000/room</string>
+    <string name="URL_TRAIN">http://10.0.2.2:5000/train</string>
+    <string name="URL_SCAN">http://10.0.2.2:5000/scan</string>
+    <string name="URL_PREDICT">http://10.0.2.2:5000/predict</string>
+    <string name="verify_user_URL">http://10.0.2.2:5000/user/verify</string>
+    <string name="create_user_URL">http://10.0.2.2:5000/user/new</string>
+    <string name="update_password_URL">http://10.0.2.2:5000/user/update</string>
 
-    <string name="URL_BUILDING">http://localhost:5000/building</string>
-    <string name="URL_ROOM">http://127.0.0.1:5000/room</string>
-    <string name="URL_TRAIN">http://127.0.0.1:5000/train</string>
-    <string name="URL_SCAN">http://127.0.0.1:5000/scan</string>
-    <string name="URL_PREDICT">http://127.0.0.1:5000/predict</string>
-    <string name="verify_user_URL">http://localhost:5000/user/verify</string>
-    <string name="create_user_URL">http://127.0.0.1:5000/user/new</string>
-    <string name="update_password_URL">http://127.0.0.1:5000/user/update</string>
+    <!--<string name="URL_BUILDING">http://localhost:5000/building</string>-->
+    <!--<string name="URL_ROOM">http://127.0.0.1:5000/room</string>-->
+    <!--<string name="URL_TRAIN">http://127.0.0.1:5000/train</string>-->
+    <!--<string name="URL_SCAN">http://127.0.0.1:5000/scan</string>-->
+    <!--<string name="URL_PREDICT">http://127.0.0.1:5000/predict</string>-->
+    <!--<string name="verify_user_URL">http://localhost:5000/user/verify</string>-->
+    <!--<string name="create_user_URL">http://127.0.0.1:5000/user/new</string>-->
+    <!--<string name="update_password_URL">http://127.0.0.1:5000/user/update</string>-->
 
     <!--<string name="URL_BUILDING">http://10.20.13.4:5000/building</string>-->
     <!--<string name="URL_ROOM">http://10.20.13.4:5000/room</string>-->

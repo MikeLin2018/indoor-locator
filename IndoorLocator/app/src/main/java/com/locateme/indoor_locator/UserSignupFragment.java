@@ -134,15 +134,14 @@ public class UserSignupFragment extends Fragment {
         int numCount = 0;
         if (password.length() < 6)
             return false;
-        else
-            return true;
-//        for (int i = 0; i < password.length(); i++) {
-//            char ch = password.charAt(i);
-//            if (is_Numeric(ch)) numCount++;
-//            else if (is_Letter(ch)) charCount++;
-//            else return false;
-//        }
-//        return (charCount >= 2 && numCount >= 2);
+
+        for (int i = 0; i < password.length(); i++) {
+            char ch = password.charAt(i);
+            if (is_Numeric(ch)) numCount++;
+            else if (is_Letter(ch)) charCount++;
+            else return false;
+        }
+        return (charCount >= 1 && numCount >= 1);
     }
 
     public static boolean is_Letter(char ch) {
