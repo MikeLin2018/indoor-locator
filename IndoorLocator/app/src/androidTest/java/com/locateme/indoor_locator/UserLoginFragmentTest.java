@@ -37,7 +37,6 @@ public class UserLoginFragmentTest {
         mActivityTestRule.getActivity()
                 .getSupportFragmentManager().beginTransaction();
         resources = mActivityTestRule.getActivity().getResources();
-//        Intents.init();
         userLoginFragment = new UserLoginFragment();
     }
 
@@ -46,18 +45,7 @@ public class UserLoginFragmentTest {
     public void textViewTest() throws Exception {
 
         onView(withId(R.id.title)).check(matches(withText("Login")));
-//
-//
-//        //set text perform action on the button, get text and validate
-//
-//        onView(withId(R.id.editText)).perform(typeText("sreejathoom@gmail.com"));
-//        onView(withId(R.id.editText2)).perform(typeText("123"));
-//
-//        closeSoftKeyboard();
-//
-//        onView(withId(R.id.loginButton)).perform(click());
-//        String s = resources.getString(R.id.editText);
-//        TestCase.assertNotNull(s);
+
     }
 
 
@@ -84,15 +72,6 @@ public class UserLoginFragmentTest {
         TestCase.assertFalse(userLoginFragment.validEmailForm("sreejathoom@gmailcom"));
     }
 
-//    @Test
-//    public void passwordValidityTest() throws Exception{
-//        TestCase.assertTrue(userLoginFragment.validPasswordForm("Hello1"));
-//        TestCase.assertFalse(userLoginFragment.validPasswordForm("Hell1"));
-//        TestCase.assertFalse(userLoginFragment.validPasswordForm(""));
-//        TestCase.assertFalse(userLoginFragment.validPasswordForm("hello"));
-//    }
-
-
 
     //set the value to edit text
     @Test
@@ -109,10 +88,7 @@ public class UserLoginFragmentTest {
 
     }
 
-//    @Test
-//    public void loginTest() {
-//
-//    }
+
 
     Matcher<View> hasValueEqualTo(final String content) {
 
@@ -141,84 +117,9 @@ public class UserLoginFragmentTest {
                 return false;
             }
         };
+
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // TestCase.assertTrue(userLoginFragment.validEmailForm());
-
-
-
-
-        //intended(hasComponent(new ComponentName(getTargetContext(), HomeActivity.class)));
-
-        //String loginTxt = resources.getString(R.id.errorMessage);
-        //onView(withId(R.id.login_result)).check(matches(withText(loginTxt)));
-
-
-
-       /// onView(withText(R.id.editText2)).check(matches(isDisplayed()));
-//        ViewInteraction appCompatEditText = onView(
-//                allOf(withId(R.id.editText),
-//                        childAtPosition(
-//                                childAtPosition(
-//                                        withId(R.id.fragment_container),
-//                                        0),
-//                                2),
-//                        isDisplayed()));
-//        appCompatEditText.perform(click());
-
-
-
-//    @Test
-//    public void testFragment() {
-//        //onView(withId(R.id.loginButton)).perform(click());
-//        onView(allOf(withId(R.id.textView),withEffectiveVisibility(VISIBLE))).
-//                check(matches(isDisplayed()));
-//    }
-
-//    @Test
-//    public void fragment_can_be_instantiated() {
-//        mActivityTestRule.getActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                UserLoginFragment userLoginFragment = startVoiceFragment();
-//            }
-//        });
-//        // Then use Espresso to test the Fragment
-//        onView(withId(R.id.iv_record_image)).check(matches(isDisplayed()));
-//    }
-
-
-
-
-
-
-
-
 
 
 }
