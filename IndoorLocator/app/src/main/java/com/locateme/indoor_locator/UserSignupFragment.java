@@ -36,13 +36,22 @@ public class UserSignupFragment extends Fragment {
     private TextView errorMessage;
     private OkHttpClient client = new OkHttpClient();
     private final String TAG = "SIGNUP";
-
     Intent in;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        //Hide the navigation bar
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_user_signup, container, false);
+
+
+
         usernameEntered = (EditText) v.findViewById(R.id.signup_username);
         emailEntered = (EditText) v.findViewById(R.id.signup_email);
         passwordEntered = (EditText) v.findViewById(R.id.signup_password);
